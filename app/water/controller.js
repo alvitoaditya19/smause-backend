@@ -1,4 +1,4 @@
-const Temperature = require("./model");
+const Water = require("./model");
 const { Parser } = require("json2csv");
 const crypto = require('crypto');
 
@@ -17,14 +17,22 @@ module.exports = {
       if (!page) {
         page = 1;
       }
-      const temperature = await Temperature.find({});
+      const water = await Water.find({});
 
-      const timeTemp = temperature.map((suhuDataMap, index) => {
+      const timeTemp = water.map((suhuDataMap, index) => {
         const suhuCalender = new Date(suhuDataMap.createdAt);
+
+        const dataDecipher1 = crypto.createDecipheriv(cryptoAlgorithm , key, iv);
+        let decryptedData1 = dataDecipher1.update(suhuDataMap.ketinggianAir,  'hex', 'utf8');
+        decryptedData1 += dataDecipher1.final('utf8');
+  
+        const dataDecipher2 = crypto.createDecipheriv(cryptoAlgorithm , key, iv);
+        let decryptedData2 = dataDecipher2.update(suhuDataMap.oksigen,  'hex', 'utf8');
+        decryptedData2 += dataDecipher2.final('utf8');
         return {
           id: index + 1,
-          celcius: suhuDataMap.celcius,
-          humidity: suhuDataMap.humidity,
+          ketinggianAir: decryptedData1,
+          oksigen:decryptedData2,
           date:
             suhuCalender.getDate() +
             " - " +
@@ -39,7 +47,7 @@ module.exports = {
             suhuCalender.getSeconds(),
         };
       });
-      const totalTemp = temperature.length;
+      const totalTemp = water.length;
 
       const startIndex = (page - 1) * limit;
       const endIndex = page * limit;
@@ -72,8 +80,11 @@ module.exports = {
         oksigen: dataCipher2,
       };
 
+      const dataSuhu = new Water(payload);
+      await dataSuhu.save();
+
       
-      res.status(200).json({data : payload});
+      res.status(200).json({data : dataSuhu});
 
     } catch (err) {
       res.status(500).json({

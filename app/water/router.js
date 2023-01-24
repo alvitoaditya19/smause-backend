@@ -6,7 +6,7 @@ const multer = require("multer");
 const os = require("os");
 
 // API
-router.get("/",isLoginAdmin, getTemp);
+router.get("/", getTemp);
 router.post("/post", postSuhu);
 router.post("/postt", decryptData);
 
