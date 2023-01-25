@@ -3,11 +3,12 @@ const { Parser } = require("json2csv");
 const crypto = require('crypto');
 
 const cryptoAlgorithm = 'aes-128-cbc';
-const key = 'abcdefghijklmnop';
-const iv = '1234567890123456';
+const key = 'tugasakhir421654'; //16 karakter
+const iv = '4567123212343219'; //16 karakter
+// 1234567890123456
 
 module.exports = {
-  getTemp: async (req, res, next) => {
+  getDataWaterEnc: async (req, res, next) => {
     try {
       let { limit = "" } = req.query;
       let { page = "" } = req.query;
@@ -19,42 +20,35 @@ module.exports = {
       }
       const water = await Water.find({});
 
-      const timeTemp = water.map((suhuDataMap, index) => {
-        const suhuCalender = new Date(suhuDataMap.createdAt);
-
-        const dataDecipher1 = crypto.createDecipheriv(cryptoAlgorithm , key, iv);
-        let decryptedData1 = dataDecipher1.update(suhuDataMap.ketinggianAir,  'hex', 'utf8');
-        decryptedData1 += dataDecipher1.final('utf8');
-  
-        const dataDecipher2 = crypto.createDecipheriv(cryptoAlgorithm , key, iv);
-        let decryptedData2 = dataDecipher2.update(suhuDataMap.oksigen,  'hex', 'utf8');
-        decryptedData2 += dataDecipher2.final('utf8');
+      const timeWater = water.map((waterDataMap, index) => {
+        const waterCalender = new Date(waterDataMap.createdAt);
+       
         return {
           id: index + 1,
-          ketinggianAir: decryptedData1,
-          oksigen:decryptedData2,
+          ketinggianAir: waterDataMap.ketinggianAir,
+          oksigen:waterDataMap.oksigen,
           date:
-            suhuCalender.getDate() +
+            waterCalender.getDate() +
             " - " +
-            (suhuCalender.getMonth() + 1) +
+            (waterCalender.getMonth() + 1) +
             " - " +
-            suhuCalender.getFullYear(),
+            waterCalender.getFullYear(),
           time:
-            suhuCalender.getHours() +
+            waterCalender.getHours() +
             ":" +
-            suhuCalender.getMinutes() +
+            waterCalender.getMinutes() +
             ":" +
-            suhuCalender.getSeconds(),
+            waterCalender.getSeconds(),
         };
       });
-      const totalTemp = water.length;
+      const totalWaterData = water.length;
 
       const startIndex = (page - 1) * limit;
       const endIndex = page * limit;
-      const result = timeTemp.slice(startIndex, endIndex);
+      const result = timeWater.slice(startIndex, endIndex);
 
       res.status(201).json({
-        total: totalTemp,
+        total: totalWaterData,
         data: result,
       });
     } catch (err) {
@@ -63,7 +57,67 @@ module.exports = {
       });
     }
   },
-  postSuhu: async (req, res, next) => {
+  getDataWaterReal: async (req, res, next) => {
+    try {
+      let { limit = "" } = req.query;
+      let { page = "" } = req.query;
+      if (!limit) {
+        limit = Infinity;
+      }
+      if (!page) {
+        page = 1;
+      }
+      const water = await Water.find({});
+
+      const timeWater = water.map((waterDataMap, index) => {
+        const waterCalender = new Date(waterDataMap.createdAt);
+
+        const dataDecipher1 = crypto.createDecipheriv(cryptoAlgorithm , key, iv);
+        let decKetinngianAir = dataDecipher1.update(waterDataMap.ketinggianAir,  'hex', 'utf8');
+        decKetinngianAir += dataDecipher1.final('utf8');
+  
+        const dataDecipher2 = crypto.createDecipheriv(cryptoAlgorithm , key, iv);
+        let decOksigen = dataDecipher2.update(waterDataMap.oksigen,  'hex', 'utf8');
+        decOksigen += dataDecipher2.final('utf8');
+        
+        return {
+          id: index + 1,
+          ketinggianAir: decKetinngianAir,
+          oksigen:decOksigen,
+          date:
+            waterCalender.getDate() +
+            " - " +
+            (waterCalender.getMonth() + 1) +
+            " - " +
+            waterCalender.getFullYear(),
+          time:
+            waterCalender.getHours() +
+            ":" +
+            waterCalender.getMinutes() +
+            ":" +
+            waterCalender.getSeconds(),
+        };
+      });
+      const totalWaterData = water.length;
+
+      const startIndex = (page - 1) * limit;
+      const endIndex = page * limit;
+      const result = timeWater.slice(startIndex, endIndex);
+
+      res.status(201).json({
+        total: totalWaterData,
+        data: result,
+      });
+    } catch (err) {
+      res.status(500).json({
+        message: err.message || `Internal Server Error`,
+      });
+    }
+  },
+
+
+  // Testing
+  postWater: async (req, res, next) => {
     try {
       const { ketinggianAir, oksigen } = req.body;
 
@@ -124,24 +178,24 @@ module.exports = {
         "id humidity humidity createdAt updatedAt"
       );
 
-      const customTemp = temperature.map((suhuDataMap, index) => {
-        const suhuCalender = new Date(suhuDataMap.createdAt);
+      const customTemp = temperature.map((waterDataMap, index) => {
+        const waterCalender = new Date(waterDataMap.createdAt);
         return {
           id: index + 1,
-          celcius: suhuDataMap.celcius,
-          humidity: suhuDataMap.humidity,
+          celcius: waterDataMap.celcius,
+          humidity: waterDataMap.humidity,
           date:
-            suhuCalender.getDate() +
+            waterCalender.getDate() +
             " - " +
-            (suhuCalender.getMonth() + 1) +
+            (waterCalender.getMonth() + 1) +
             " - " +
-            suhuCalender.getFullYear(),
+            waterCalender.getFullYear(),
           time:
-            suhuCalender.getHours() +
+            waterCalender.getHours() +
             ":" +
-            suhuCalender.getMinutes() +
+            waterCalender.getMinutes() +
             ":" +
-            suhuCalender.getSeconds(),
+            waterCalender.getSeconds(),
         };
       });
 

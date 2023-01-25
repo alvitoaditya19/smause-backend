@@ -23,15 +23,15 @@ module.exports = {
         if (user) {
           const checkPassword = bcrypt.compareSync(password, user.password);
           if (checkPassword) {
-            if (user.status == "admin") {
-              const token = jwt.sign(
+             const token = jwt.sign(
                 {
                   user: {
                     id: user.id,
                     email: user.email,
-                    nama: user.nama,
+                    name: user.name,
                     username: user.username,
                     phoneNumber: user.phoneNumber,
+                    status: user.status,
                     avatar: user.avatar,
                   },
                 },
@@ -40,11 +40,7 @@ module.exports = {
               res.status(200).json({
                 data: { token },
               });
-            } else {
-              res.status(403).json({
-                message: "Anda tidak diizinkan untuk mengakses sistem dashboard ini",
-              });
-            }
+            
           } else {
             res.status(403).json({
               message: "password yang anda masukkan salah",
@@ -264,23 +260,17 @@ module.exports = {
           status: { $regex: `${status}`, $options: "i" },
         };
       }
-      // let data = 'Halo semuanya. Ini adalah pesan yang ingin dikirimkan.'
-
-      const dataCrypto = crypto.createCipheriv(cryptoAlgorithm, key, iv);
-      // let dataCipher = dataCrypto.update(data, 'utf8', 'hex');
-      // dataCipher += dataCrypto.final('hex');
-      // res.status(200).json({ data: dataCipher });
 
 
       if (limit == 0) {
         let user = await User.find(criteria).select('name email username status phoneNumber avatar');
         
-        res.status(200).json({ data: user.name });
+        res.status(200).json({ data: user });
 
       } else {
         let user = await User.find(criteria).select('name email username status phoneNumber avatar').limit(limit);
         
-        res.status(200).json({ data: user.name });
+        res.status(200).json({ data: user });
       }
     } catch (err) {
       res.status(500).json({

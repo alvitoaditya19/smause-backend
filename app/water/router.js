@@ -1,13 +1,20 @@
 var express = require("express");
 var router = express.Router();
-const { getTemp, postSuhu, actionConvertCSV, decryptData } = require("./controller");
+const { getDataWaterReal,getDataWaterEnc, postWater, actionConvertCSV, decryptData } = require("./controller");
 const { isLoginAdmin } = require('../middleware/auth');
 const multer = require("multer");
 const os = require("os");
 
 // API
-router.get("/", getTemp);
-router.post("/post", postSuhu);
+router.get("/encrypt",isLoginAdmin, getDataWaterEnc);
+router.get("/real",isLoginAdmin, getDataWaterReal);
+
+
+
+
+
+// Testing
+router.post("/post", postWater);
 router.post("/postt", decryptData);
 
 router.get("/csv", actionConvertCSV);
