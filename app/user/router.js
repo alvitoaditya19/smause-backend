@@ -1,6 +1,6 @@
 var express = require("express");
 var router = express.Router();
-const { actionCreate, signin, getUser, actionEdit, actionDelete, detailUser } = require("./controller");
+const { actionCreate, signin, getUser, actionEdit, actionDelete, detailUser,getUserr } = require("./controller");
 const multer = require("multer");
 const { isLoginAdmin, } = require("../middleware/auth");
 
@@ -17,7 +17,9 @@ router.put(
 );
 
 router.get("/", isLoginAdmin, getUser);
-router.get("/:id", isLoginAdmin, detailUser);
+router.get("/r", getUserr);
+
+router.get("/:id", detailUser);
 router.delete("/delete/:id", isLoginAdmin, actionDelete);
 
 module.exports = router;

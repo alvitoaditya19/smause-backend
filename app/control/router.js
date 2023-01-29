@@ -5,10 +5,10 @@ const multer = require("multer");
 const { isLoginAdmin,isLoginUser } = require("../middleware/auth");
 
 const os = require("os");
-const { actionStatusLamp1, getStatusLamp1 } = require("./controller");
+const { actionStatusControl, getStatusControl } = require("./controller");
 
-router.get("/", getStatusLamp1);
-router.put("/", actionStatusLamp1);
+router.get("/",isLoginAdmin, getStatusControl);
+router.put("/",isLoginAdmin, actionStatusControl);
 
 
 module.exports = router;

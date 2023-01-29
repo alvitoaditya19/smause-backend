@@ -13,8 +13,7 @@ var indexRouter = require('./routes/index');
 // API
 const usersRouter = require("./app/user/router");
 const watersRouter = require("./app/water/router");
-
-
+const controlsRouter = require("./app/control/router");
 
 var app = express();
 const URL = `/api/v1`;
@@ -51,6 +50,8 @@ app.use('/', indexRouter);
 // API
 app.use(`${URL}/users`, usersRouter);
 app.use(`${URL}/waters`, watersRouter);
+app.use(`${URL}/controls`, controlsRouter);
+
 
 
 // catch 404 and forward to error handler
