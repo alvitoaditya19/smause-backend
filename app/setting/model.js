@@ -5,17 +5,13 @@ let settingSchema = mongoose.Schema({
     type: String,
     require: [true, "Vegetable Harus Diisi"],
   },
-  amaountVegetable: {
+  amountVegetable: {
     type: Number,
     require: [true, "Vegetable Harus Diisi"],
   },
-  nameHarvest: {
-    type: String,
-    require: [true, "Harvest Celcius Harus Diisi"],
-  },
   amountHarvest: {
     type: Number,
-    require: [true, "Harvest Celcius Harus Diisi"],
+    require: [true, "Harvest Harus Diisi"],
   },
 },{ timestamps: true });
 

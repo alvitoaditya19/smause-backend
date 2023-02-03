@@ -17,7 +17,6 @@ router.put(
 );
 
 router.get("/", isLoginAdmin, getUser);
-router.get("/r", getUserr);
 
 router.get("/:id", detailUser);
 router.delete("/delete/:id", isLoginAdmin, actionDelete);
