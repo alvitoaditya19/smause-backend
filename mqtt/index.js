@@ -1,5 +1,5 @@
 const mqtt = require("mqtt");
-const { storeData, storeDataKAir, storeDataWaterUdara, storeDataWaterTanah } = require("./dataHandler");
+const { storeData, storeDataUdara, storeDataTanah, storeDataAir, storeDataAirEnc, storeDataUdaraEnc, storeDataTanahEnc, } = require("./dataHandler");
 
 const client = mqtt.connect(process.env.MQTT_HOST)
 
@@ -10,7 +10,9 @@ client.on('connect', () => {
     client.subscribe('intern-KIREI/IOT/Air', () => console.log('intern-KIREI/IOT/Air subscribed'));
     client.subscribe('intern-KIREI/IOT/Udara', () => console.log('intern-KIREI/IOT/Udara subscribed'));
     client.subscribe('intern-KIREI/IOT/Tanah', () => console.log('intern-KIREI/IOT/Tanah subscribed'));
-
+    client.subscribe('intern-KIREI/IOT/AirEnc', () => console.log('intern-KIREI/IOT/AirEnc subscribed'));
+    client.subscribe('intern-KIREI/IOT/UdaraEnc', () => console.log('intern-KIREI/IOT/UdaraEnc subscribed'));
+    client.subscribe('intern-KIREI/IOT/TanahEnc', () => console.log('intern-KIREI/IOT/TanahEnc subscribed'));
 })
 
 client.on('message', (topic, payload) => {
@@ -20,12 +22,20 @@ client.on('message', (topic, payload) => {
         GetDataControl(payload)
     }
     else if (topic === 'intern-KIREI/IOT/Air') {
-        storeDataKAir(payload)
+        storeDataAir(payload)
     } else if (topic === 'intern-KIREI/IOT/Udara') {
-        storeDataWaterUdara(payload)
+        storeDataUdara(payload)
     }
     else if (topic === 'intern-KIREI/IOT/Tanah') {
-        storeDataWaterTanah(payload)
+        storeDataTanah(payload)
+    }
+    else if (topic === 'intern-KIREI/IOT/AirEnc') {
+        storeDataAirEnc(payload)
+    } else if (topic === 'intern-KIREI/IOT/UdaraEnc') {
+        storeDataUdaraEnc(payload)
+    }
+    else if (topic === 'intern-KIREI/IOT/TanahEnc') {
+        storeDataTanahEnc(payload)
     }
 })
 
