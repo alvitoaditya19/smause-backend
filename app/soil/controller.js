@@ -1,5 +1,5 @@
-const Temperature = require("./model");
-const TemperatureEnc = require("./model-enc");
+const Soil = require("./model");
+const SoilEnc = require("./model-enc");
 
 const { Parser } = require("json2csv");
 const crypto = require('crypto');
@@ -10,7 +10,7 @@ const iv = '4567123212343219'; //16 karakter
 // 1234567890123456
 
 module.exports = {
-  getDataTempEnc: async (req, res, next) => {
+  getDataSoilEnc: async (req, res, next) => {
     try {
       let { limit = "" } = req.query;
       let { page = "" } = req.query;
@@ -20,37 +20,37 @@ module.exports = {
       if (!page) {
         page = 1;
       }
-      const temperature = await TemperatureEnc.find({});
+      const soilData = await SoilEnc.find({});
 
-      const timeTemp = temperature.map((suhuDataMap, index) => {
-        const suhuCalender = new Date(suhuDataMap.createdAt);
+      const soilDatMap = soilData.map((soilDataMap, index) => {
+        const soilCalender = new Date(soilDataMap.createdAt);
         return {
           no: index + 1,
-          id: suhuDataMap.id,
-          celcius: suhuDataMap.celcius,
-          humidity: suhuDataMap.humidity,
+          id: soilDataMap.id,
+          kelembapanTanah: soilDataMap.kelembapanTanah,
+          phTanah: soilDataMap.phTanah,
           date:
-            suhuCalender.getDate() +
+            soilCalender.getDate() +
             " - " +
-            (suhuCalender.getMonth() + 1) +
+            (soilCalender.getMonth() + 1) +
             " - " +
-            suhuCalender.getFullYear(),
+            soilCalender.getFullYear(),
           time:
-            suhuCalender.getHours() +
+            soilCalender.getHours() +
             ":" +
-            suhuCalender.getMinutes() +
+            soilCalender.getMinutes() +
             ":" +
-            suhuCalender.getSeconds(),
+            soilCalender.getSeconds(),
         };
       });
-      const totalTemp = temperature.length;
+      const totalSoil = soilDatMap.length;
 
       const startIndex = (page - 1) * limit;
       const endIndex = page * limit;
-      const result = timeTemp.slice(startIndex, endIndex);
+      const result = soilDatMap.slice(startIndex, endIndex);
 
       res.status(201).json({
-        total: totalTemp,
+        total: totalSoil,
         data: result,
       });
     } catch (err) {
@@ -59,7 +59,7 @@ module.exports = {
       });
     }
   },
-  getDataTempReal: async (req, res, next) => {
+  getDataSoilReal: async (req, res, next) => {
     try {
       let { limit = "" } = req.query;
       let { page = "" } = req.query;
@@ -69,45 +69,45 @@ module.exports = {
       if (!page) {
         page = 1;
       }
-      const temperature = await TemperatureEnc.find({});
+      const soilData = await SoilEnc.find({});
 
-      const timeTemp = temperature.map((suhuDataMap, index) => {
-        const suhuCalender = new Date(suhuDataMap.createdAt);
+      const soilDataMap = soilData.map((soilDataMap, index) => {
+        const soilCalender = new Date(soilDataMap.createdAt);
         const dataDecipher1 = crypto.createDecipheriv(cryptoAlgorithm , key, iv);
-        let decCelcius = dataDecipher1.update(suhuDataMap.celcius,  'hex', 'utf8');
+        let decCelcius = dataDecipher1.update(soilDataMap.kelembapanTanah,  'hex', 'utf8');
         decCelcius += dataDecipher1.final('utf8');
   
         const dataDecipher2 = crypto.createDecipheriv(cryptoAlgorithm , key, iv);
-        let decHumidty = dataDecipher2.update(suhuDataMap.humidity,  'hex', 'utf8');
+        let decHumidty = dataDecipher2.update(soilDataMap.phTanah,  'hex', 'utf8');
         decHumidty += dataDecipher2.final('utf8');
 
         return {
           no: index + 1,
-          id: suhuDataMap.id,
-          celcius: decCelcius,
-          humidity: decHumidty,
+          id: soilDataMap.id,
+          kelembapanTanah: decCelcius,
+          phTanah: decHumidty,
           date:
-            suhuCalender.getDate() +
+            soilCalender.getDate() +
             " - " +
-            (suhuCalender.getMonth() + 1) +
+            (soilCalender.getMonth() + 1) +
             " - " +
-            suhuCalender.getFullYear(),
+            soilCalender.getFullYear(),
           time:
-            suhuCalender.getHours() +
+            soilCalender.getHours() +
             ":" +
-            suhuCalender.getMinutes() +
+            soilCalender.getMinutes() +
             ":" +
-            suhuCalender.getSeconds(),
+            soilCalender.getSeconds(),
         };
       });
-      const totalTemp = temperature.length;
+      const totalSoil = soilDataMap.length;
 
       const startIndex = (page - 1) * limit;
       const endIndex = page * limit;
-      const result = timeTemp.slice(startIndex, endIndex);
+      const result = soilDataMap.slice(startIndex, endIndex);
 
       res.status(201).json({
-        total: totalTemp,
+        total: totalSoil,
         data: result,
       });
     } catch (err) {
@@ -116,37 +116,37 @@ module.exports = {
       });
     }
   },
-  postTemp: async (req, res, next) => {
+  postSoil: async (req, res, next) => {
     try {
-      const { celcius, humidity } = req.body;
+      const { kelembapanTanah, phTanah } = req.body;
 
       const dataEncrypt1 = crypto.createCipheriv(cryptoAlgorithm , key, iv);
-      let dataCipher1 = dataEncrypt1.update(celcius, 'utf8', 'hex');
+      let dataCipher1 = dataEncrypt1.update(kelembapanTanah, 'utf8', 'hex');
       dataCipher1 += dataEncrypt1.final('hex');
 
       const dataEncrypt2 = crypto.createCipheriv(cryptoAlgorithm , key, iv);
-      let dataCipher2 = dataEncrypt2.update(humidity, 'utf8', 'hex');
+      let dataCipher2 = dataEncrypt2.update(phTanah, 'utf8', 'hex');
       dataCipher2 += dataEncrypt2.final('hex');
 
       const payloadEnc = {
-        celcius: dataCipher1,
-        humidity: dataCipher2,
+        kelembapanTanah: dataCipher1,
+        phTanah: dataCipher2,
       };
 
       const payloadReal = {
-        celcius: celcius,
-        humidity: humidity,
+        kelembapanTanah: kelembapanTanah,
+        phTanah: phTanah,
       };
 
-      const tempReal = new Temperature(payloadReal);
+      const soilReal = new Soil(payloadReal);
 
-      const tempEnc = new TemperatureEnc(payloadEnc);
+      const soilEnc = new SoilEnc(payloadEnc);
 
 
-      await tempReal.save();
-      await tempEnc.save();
+      await soilReal.save();
+      await soilEnc.save();
 
-      res.status(200).json({ dataReal: tempReal, dataEncrypt:tempEnc });
+      res.status(200).json({ dataReal: soilReal, dataEncrypt:soilEnc });
     } catch (err) {
       res.status(500).json({
         message: err.message || `Internal Server Error`,
@@ -155,17 +155,17 @@ module.exports = {
   },
   postTempReal: async (req, res, next) => {
     try {
-      const { celcius, humidity } = req.body;
+      const { kelembapanTanah, phTanah } = req.body;
 
       const payload = {
-        celcius: celcius,
-        humidity: humidity,
+        kelembapanTanah: kelembapanTanah,
+        phTanah: phTanah,
       };
 
-      const suhu = new Temperature(payload);
-      await suhu.save();
+      const soil = new Soil(payload);
+      await soil.save();
 
-      res.status(200).json({ data: suhu });
+      res.status(200).json({ data: soil });
     } catch (err) {
       res.status(500).json({
         message: err.message || `Internal Server Error`,
@@ -174,25 +174,25 @@ module.exports = {
   },
   postTempEnc: async (req, res, next) => {
     try {
-      const { celcius, humidity } = req.body;
+      const { kelembapanTanah, phTanah } = req.body;
 
       const dataEncrypt1 = crypto.createCipheriv(cryptoAlgorithm , key, iv);
-      let dataCipher1 = dataEncrypt1.update(celcius, 'utf8', 'hex');
+      let dataCipher1 = dataEncrypt1.update(kelembapanTanah, 'utf8', 'hex');
       dataCipher1 += dataEncrypt1.final('hex');
 
       const dataEncrypt2 = crypto.createCipheriv(cryptoAlgorithm , key, iv);
-      let dataCipher2 = dataEncrypt2.update(humidity, 'utf8', 'hex');
+      let dataCipher2 = dataEncrypt2.update(phTanah, 'utf8', 'hex');
       dataCipher2 += dataEncrypt2.final('hex');
 
       const payload = {
-        celcius: dataCipher1,
-        humidity: dataCipher2,
+        kelembapanTanah: dataCipher1,
+        phTanah: dataCipher2,
       };
 
-      const suhu = new TemperatureEnc(payload);
-      await suhu.save();
+      const soil = new SoilEnc(payload);
+      await soil.save();
 
-      res.status(200).json({ data: suhu });
+      res.status(200).json({ data: soil });
     } catch (err) {
       res.status(500).json({
         message: err.message || `Internal Server Error`,
@@ -205,7 +205,7 @@ module.exports = {
         "id humidity humidity createdAt updatedAt"
       );
 
-      const customTemp = temperature.map((suhuDataMap, index) => {
+      const customTemp = temperature.map((soilDataMap, index) => {
         const suhuCalender = new Date(suhuDataMap.createdAt);
         return {
           id: index + 1,

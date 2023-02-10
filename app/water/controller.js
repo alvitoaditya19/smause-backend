@@ -1,4 +1,6 @@
 const Water = require("./model");
+const WaterEnc = require("./model-enc");
+
 const { Parser } = require("json2csv");
 const crypto = require('crypto');
 
@@ -18,13 +20,15 @@ module.exports = {
       if (!page) {
         page = 1;
       }
-      const water = await Water.find({});
+      const water = await WaterEnc.find({});
 
       const timeWater = water.map((waterDataMap, index) => {
         const waterCalender = new Date(waterDataMap.createdAt);
        
         return {
           id: index + 1,
+          id: waterDataMap.id,
+
           ketinggianAir: waterDataMap.ketinggianAir,
           oksigen:waterDataMap.oksigen,
           date:
@@ -49,7 +53,7 @@ module.exports = {
 
       res.status(201).json({
         total: totalWaterData,
-        data: result,
+        data: water,
       });
     } catch (err) {
       res.status(500).json({
@@ -67,7 +71,7 @@ module.exports = {
       if (!page) {
         page = 1;
       }
-      const water = await Water.find({});
+      const water = await WaterEnc.find({});
 
       const timeWater = water.map((waterDataMap, index) => {
         const waterCalender = new Date(waterDataMap.createdAt);
@@ -81,7 +85,8 @@ module.exports = {
         decOksigen += dataDecipher2.final('utf8');
         
         return {
-          id: index + 1,
+          no: index + 1,
+          id: waterDataMap.id,
           ketinggianAir: decKetinngianAir,
           oksigen:decOksigen,
           date:
@@ -115,8 +120,6 @@ module.exports = {
     }
   },
 
-
-  // Testing
   postWater: async (req, res, next) => {
     try {
       const { ketinggianAir, oksigen } = req.body;
@@ -129,16 +132,23 @@ module.exports = {
       let dataCipher2 = dataEncrypt2.update(oksigen, 'utf8', 'hex');
       dataCipher2 += dataEncrypt2.final('hex');
 
-      const payload = {
+      const payloadEnc = {
         ketinggianAir: dataCipher1,
         oksigen: dataCipher2,
       };
 
-      const dataSuhu = new Water(payload);
-      await dataSuhu.save();
+      const payloadReal = {
+        ketinggianAir: ketinggianAir,
+        oksigen: oksigen,
+      };
 
+      const waterReal = new Water(payloadReal);
+      const waterEnc = new WaterEnc(payloadEnc);
+
+      await waterReal.save();
+      await waterEnc.save();
       
-      res.status(200).json({data : dataSuhu});
+      res.status(200).json({dataReal : waterReal, dataEncrypt: waterEnc});
 
     } catch (err) {
       res.status(500).json({

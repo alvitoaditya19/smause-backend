@@ -15,6 +15,8 @@ const usersRouter = require("./app/user/router");
 const watersRouter = require("./app/water/router");
 const controlsRouter = require("./app/control/router");
 const settingsRouter = require("./app/setting/router");
+const temperaturesRouter = require("./app/temperature/router");
+
 
 
 var app = express();
@@ -54,6 +56,8 @@ app.use(`${URL}/users`, usersRouter);
 app.use(`${URL}/waters`, watersRouter);
 app.use(`${URL}/controls`, controlsRouter);
 app.use(`${URL}/settings`, settingsRouter);
+app.use(`${URL}/temperatures`, temperaturesRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

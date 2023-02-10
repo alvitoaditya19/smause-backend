@@ -6,16 +6,13 @@ const multer = require("multer");
 const os = require("os");
 
 // API
+router.post("/",isLoginAdmin, postWater);
+
 router.get("/encrypt",isLoginAdmin, getDataWaterEnc);
 router.get("/real",isLoginAdmin, getDataWaterReal);
 
-
-
-
-
 // Testing
-router.post("/post", postWater);
-router.post("/postt", decryptData);
+// router.post("/postt", decryptData);
 
 router.get("/csv", actionConvertCSV);
 

@@ -1,18 +1,18 @@
 var express = require("express");
 var router = express.Router();
-const {postTemp, getDataTempEnc,getDataTempReal, postTempReal,postTempEnc, actionConvertCSV,  } = require("./controller");
+const {postTempReal,postTempEnc, actionConvertCSV, getDataSoilEnc, getDataSoilReal, postSoil,  } = require("./controller");
 const { isLoginAdmin } = require('../middleware/auth');
 const multer = require("multer");
 const os = require("os");
 
 // API
-router.post("/", isLoginAdmin,postTemp);
+router.post("/", isLoginAdmin,postSoil);
 
-router.get("/encrypt",isLoginAdmin, getDataTempEnc);
-router.get("/real",isLoginAdmin, getDataTempReal);
+router.get("/encrypt",isLoginAdmin, getDataSoilEnc);
+router.get("/real", isLoginAdmin,getDataSoilReal);
 
 router.post("/encrypt",isLoginAdmin, postTempEnc);
-router.post("/real",isLoginAdmin, postTempReal);
+router.post("/real", isLoginAdmin,postTempReal);
 
 
 router.get("/csv", actionConvertCSV);

@@ -1,17 +1,32 @@
 const Settings = require("./model");
 
 module.exports = {
+  actionUp: async (req, res, next) => {
+    try {
+
+      res.status(200).json({ data: "welcoming everyone!!!!" });
+    } catch (err) {
+      if (err && err.name === "ValidationError") {
+        return res.status(422).json({
+          error: 1,
+          message: err.message,
+          fields: err.errors,
+        });
+      }
+      next(err);
+    }
+  },
   actionCreate: async (req, res, next) => {
     try {
       const payload = req.body;
 
-        let setting = new Settings(payload);
+      let setting = new Settings(payload);
 
-        await setting.save();
+      await setting.save();
 
-        delete setting._doc.password;
+      delete setting._doc.password;
 
-        res.status(201).json({ data: setting });
+      res.status(201).json({ data: setting });
     } catch (err) {
       if (err && err.name === "ValidationError") {
         return res.status(422).json({
@@ -28,21 +43,21 @@ module.exports = {
       const { id } = req.params;
       const { nameVegetable, amountVegetable, amountHarvest } = req.body;
 
-        const settingData = await Settings.findOneAndUpdate(
-          {
-            _id: id,
-          },
-          {
-            nameVegetable,
-            amountVegetable,
-            amountHarvest,
-          },
+      const settingData = await Settings.findOneAndUpdate(
+        {
+          _id: id,
+        },
+        {
+          nameVegetable,
+          amountVegetable,
+          amountHarvest,
+        },
 
-          { new: true, useFindAndModify: false }
-        );
+        { new: true, useFindAndModify: false }
+      );
 
-        res.status(200).json({ data: settingData });
-      
+      res.status(200).json({ data: settingData });
+
     } catch (err) {
       if (err && err.name === "ValidationError") {
         return res.status(422).json({
@@ -61,7 +76,7 @@ module.exports = {
         _id: id,
       });
 
-      
+
       res.json({ message: "Settings have been removed!" });
     } catch (err) {
       if (err && err.name === "ValidationError") {
@@ -107,6 +122,15 @@ module.exports = {
           amountHarvest: item.amountHarvest,
         }
       })
+
+      const sumHarvest = settingAllData
+        .map(item => item.amountHarvest)
+        .reduce((prev, curr) => prev + curr, 0);
+
+      const sumVegetable = settingAllData
+        .map(item => item.amountVegetable)
+        .reduce((prev, curr) => prev + curr, 0);
+
       const totalSettingData = settingAllData.length;
 
       const startIndex = (page - 1) * limit;
@@ -115,6 +139,8 @@ module.exports = {
 
       res.status(201).json({
         total: totalSettingData,
+        totalVegetable: sumVegetable,
+        totalHarvest: sumHarvest,
         data: result,
       });
     } catch (err) {
