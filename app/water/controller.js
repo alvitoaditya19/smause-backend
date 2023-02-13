@@ -122,7 +122,7 @@ module.exports = {
 
   postWater: async (req, res, next) => {
     try {
-      const { ketinggianAir, oksigen } = req.body;
+      const { ketinggianAir, oksigen, kekeruhanAir } = req.body;
 
       const dataEncrypt1 = crypto.createCipheriv(cryptoAlgorithm , key, iv);
       let dataCipher1 = dataEncrypt1.update(ketinggianAir, 'utf8', 'hex');
@@ -132,14 +132,21 @@ module.exports = {
       let dataCipher2 = dataEncrypt2.update(oksigen, 'utf8', 'hex');
       dataCipher2 += dataEncrypt2.final('hex');
 
+      const dataEncrypt3 = crypto.createCipheriv(cryptoAlgorithm , key, iv);
+      let dataCipher3 = dataEncrypt3.update(kekeruhanAir, 'utf8', 'hex');
+      dataCipher3 += dataEncrypt3.final('hex');
+
       const payloadEnc = {
         ketinggianAir: dataCipher1,
         oksigen: dataCipher2,
+        kekeruhanAir: dataCipher3
       };
 
       const payloadReal = {
         ketinggianAir: ketinggianAir,
         oksigen: oksigen,
+        kekeruhanAir: kekeruhanAir,
+
       };
 
       const waterReal = new Water(payloadReal);

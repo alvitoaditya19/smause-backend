@@ -3,11 +3,15 @@ const mongoose = require("mongoose");
 let waterSchema = mongoose.Schema({
   ketinggianAir: {
     type: String,
-    require: [true, "Humidity Harus Diisi"],
+    require: [true, "ketinggianAir Harus Diisi"],
   },
   oksigen: {
     type: String,
-    require: [true, "Suhu Celcius Harus Diisi"],
+    require: [true, "oksigen Harus Diisi"],
+  },
+  kekeruhanAir: {
+    type: String,
+    require: [true, "kekeruhanAir Harus Diisi"],
   },
 },{ timestamps: true });
 

@@ -15,6 +15,8 @@ const usersRouter = require("./app/user/router");
 const watersRouter = require("./app/water/router");
 const controlsRouter = require("./app/control/router");
 const settingsRouter = require("./app/setting/router");
+const soilsRouter = require("./app/soil/router");
+
 const temperaturesRouter = require("./app/temperature/router");
 
 
@@ -54,6 +56,8 @@ app.use('/', indexRouter);
 // API
 app.use(`${URL}/users`, usersRouter);
 app.use(`${URL}/waters`, watersRouter);
+app.use(`${URL}/soils`, soilsRouter);
+
 app.use(`${URL}/controls`, controlsRouter);
 app.use(`${URL}/settings`, settingsRouter);
 app.use(`${URL}/temperatures`, temperaturesRouter);
