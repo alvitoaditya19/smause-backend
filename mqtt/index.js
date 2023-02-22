@@ -1,7 +1,17 @@
 const mqtt = require("mqtt");
-const { storeData, storeDataUdara, storeDataTanah, storeDataAir, storeDataAirEnc, storeDataUdaraEnc, storeDataTanahEnc, } = require("./dataHandler");
+const { storeData, storeDataUdara, storeDataTanah, storeDataAir, storeDataAirEnc, storeDataUdaraEnc, storeDataTanahEnc, GetDataControl, } = require("./dataHandler");
 
-const client = mqtt.connect(process.env.MQTT_HOST)
+
+const host = 'tos.kirei.co.id';
+const clientId = `mqtt_${Math.random().toString(16).slice(3)}`;
+const connectUrl = `mqtt://${host}}`;
+
+// const client = mqtt.connect(process.env.MQTT_HOST)
+
+const client = mqtt.connect(connectUrl, {
+    clientId,
+    clean: true,
+})
 
 client.on('connect', () => {
     console.log("MQTT Broker connected");

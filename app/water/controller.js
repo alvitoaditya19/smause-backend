@@ -22,15 +22,17 @@ module.exports = {
       }
       const water = await WaterEnc.find({});
 
-      const timeWater = water.map((waterDataMap, index) => {
+      const waterMap = water.map((waterDataMap, index) => {
         const waterCalender = new Date(waterDataMap.createdAt);
        
         return {
-          id: index + 1,
+          no: index + 1,
           id: waterDataMap.id,
 
           ketinggianAir: waterDataMap.ketinggianAir,
           oksigen:waterDataMap.oksigen,
+          kekeruhanAir:waterDataMap.kekeruhanAir,
+
           date:
             waterCalender.getDate() +
             " - " +
@@ -45,15 +47,15 @@ module.exports = {
             waterCalender.getSeconds(),
         };
       });
-      const totalWaterData = water.length;
+      const totalWaterData = waterMap.length;
 
       const startIndex = (page - 1) * limit;
       const endIndex = page * limit;
-      const result = timeWater.slice(startIndex, endIndex);
+      const result = waterMap.slice(startIndex, endIndex);
 
       res.status(201).json({
         total: totalWaterData,
-        data: water,
+        data: result,
       });
     } catch (err) {
       res.status(500).json({
@@ -73,7 +75,7 @@ module.exports = {
       }
       const water = await WaterEnc.find({});
 
-      const timeWater = water.map((waterDataMap, index) => {
+      const waterMap = water.map((waterDataMap, index) => {
         const waterCalender = new Date(waterDataMap.createdAt);
 
         const dataDecipher1 = crypto.createDecipheriv(cryptoAlgorithm , key, iv);
@@ -107,7 +109,7 @@ module.exports = {
 
       const startIndex = (page - 1) * limit;
       const endIndex = page * limit;
-      const result = timeWater.slice(startIndex, endIndex);
+      const result = waterMap.slice(startIndex, endIndex);
 
       res.status(201).json({
         total: totalWaterData,

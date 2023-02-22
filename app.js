@@ -7,6 +7,8 @@ const methodOverride = require("method-override");
 const session = require("express-session");
 const flash = require("connect-flash");
 var cors = require('cors')
+const mqtt = require("./mqtt")
+
 
 var indexRouter = require('./routes/index');
 

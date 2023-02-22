@@ -22,6 +22,7 @@
     "express": "~4.16.1",
     "express-session": "^1.17.3",
     "http-errors": "~1.6.3",
+    "js-base64": "^3.7.5",
     "json2csv": "^6.0.0-alpha.2",
     "jsonwebtoken": "^9.0.0",
     "method-override": "^3.0.0",

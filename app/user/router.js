@@ -18,7 +18,7 @@ router.put(
 
 router.get("/", isLoginAdmin, getUser);
 
-router.get("/:id", detailUser);
+router.get("/:id", isLoginAdmin,detailUser);
 router.delete("/delete/:id", isLoginAdmin, actionDelete);
 
 module.exports = router;
