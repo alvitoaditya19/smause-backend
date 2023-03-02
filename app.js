@@ -1,5 +1,8 @@
 var createError = require("http-errors");
 var express = require("express");
+const socketIO   = require("socket.io");
+
+
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
@@ -8,7 +11,6 @@ const session = require("express-session");
 const flash = require("connect-flash");
 var cors = require('cors')
 const mqtt = require("./mqtt")
-
 
 var indexRouter = require('./routes/index');
 
@@ -20,8 +22,7 @@ const settingsRouter = require("./app/setting/router");
 const soilsRouter = require("./app/soil/router");
 
 const temperaturesRouter = require("./app/temperature/router");
-
-
+const { serverIO } = require("./bin/www");
 
 var app = express();
 const URL = `/api/v1`;
@@ -64,7 +65,6 @@ app.use(`${URL}/controls`, controlsRouter);
 app.use(`${URL}/settings`, settingsRouter);
 app.use(`${URL}/temperatures`, temperaturesRouter);
 
-
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
@@ -80,5 +80,6 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
 
 module.exports = app;

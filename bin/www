@@ -4,11 +4,35 @@ var app = require('../app');
 var debug = require('debug')('smause-backend:server');
 var http = require('http');
 const db = require("../db");
+// const socketIO = require("socket.io");
+const socketIO = require("socket.io");
+
+const socket = require('../app/socketIo/index')
+
 
 var port = normalizePort(process.env.PORT || "4000");
 app.set("port", port);
 
 var server = http.createServer(app);
+
+const io = socketIO(server, {
+    cors: {
+      origin: process.env.SOCKET_PORT,
+      credentials: true,
+    },
+  });
+
+let Socket = {
+    emit:(event, data) => {
+        io.sockets.emit(event, data)
+    }
+}
+
+io.on("connection", (socket) => {
+  console.log("We are live and connected");
+});
+
+
 
 db.on("error", function (err) {
   console.log("connection error : tidak bisa tersambung ke mongodb");
@@ -19,6 +43,7 @@ db.on("open", function () {
   server.on("error", onError);
   server.on("listening", onListening);
 });
+
 
 function normalizePort(val) {
   var port = parseInt(val, 10);
@@ -63,3 +88,6 @@ function onListening() {
   var bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
   debug("Listening on " + bind);
 }
+
+exports.socketConnection = {"io":io, "socket": Socket}
+
