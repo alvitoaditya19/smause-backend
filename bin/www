@@ -10,7 +10,7 @@ const socketIO = require("socket.io");
 const socket = require('../app/socketIo/index')
 
 
-var port = normalizePort(process.env.PORT || "4000");
+var port = normalizePort(process.env.PORT || "3002");
 app.set("port", port);
 
 var server = http.createServer(app);
