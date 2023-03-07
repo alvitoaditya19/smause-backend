@@ -49,25 +49,25 @@ module.exports = {
         const rawData = payload.toString()
         try {
             const dataJson = await JSON.parse(rawData)
-            const dataEncrypt1 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
-            let dataCipher1 = dataEncrypt1.update(dataJson.ketinggianAir, 'utf8', 'hex');
-            dataCipher1 += dataEncrypt1.final('hex');
+            // const dataEncrypt1 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
+            // let dataCipher1 = dataEncrypt1.update(dataJson.ketinggianAir, 'utf8', 'hex');
+            // dataCipher1 += dataEncrypt1.final('hex');
 
-            const dataEncrypt2 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
-            let dataCipher2 = dataEncrypt2.update(dataJson.oksigen, 'utf8', 'hex');
-            dataCipher2 += dataEncrypt2.final('hex');
+            // const dataEncrypt2 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
+            // let dataCipher2 = dataEncrypt2.update(dataJson.oksigen, 'utf8', 'hex');
+            // dataCipher2 += dataEncrypt2.final('hex');
 
-            const dataEncrypt3 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
-            let dataCipher3 = dataEncrypt3.update(dataJson.kekeruhanAir, 'utf8', 'hex');
-            dataCipher3 += dataEncrypt3.final('hex');
+            // const dataEncrypt3 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
+            // let dataCipher3 = dataEncrypt3.update(dataJson.kekeruhanAir, 'utf8', 'hex');
+            // dataCipher3 += dataEncrypt3.final('hex');
 
-            const payloadEnc = {
-                ketinggianAir: dataCipher1,
-                oksigen: dataCipher2,
-                kekeruhanAir: dataCipher3
-            };
+            // const payloadEnc = {
+            //     ketinggianAir: dataCipher1,
+            //     oksigen: dataCipher2,
+            //     kekeruhanAir: dataCipher3
+            // };
 
-            const newData = await new AirEnc(payloadEnc).save()
+            const newData = await new AirEnc(dataJson).save()
 
             const water = await AirEnc.find({});
 
@@ -107,8 +107,9 @@ module.exports = {
                         waterCalender.getSeconds(),
                 };
             });
+            socket.socketConnection.socket.emit("dataAir", water)
 
-            socket.socketConnection.socket.emit("data", waterMap.slice(-4))
+            socket.socketConnection.socket.emit("dataGraphAir", waterMap.slice(-4))
 
         } catch (error) {
             console.error(`Error ${error.message}`)
@@ -127,19 +128,19 @@ module.exports = {
         const rawData = payload.toString()
         try {
             const dataJson = await JSON.parse(rawData)
-            const dataEncrypt1 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
-            let dataCipher1 = dataEncrypt1.update(dataJson.celcius, 'utf8', 'hex');
-            dataCipher1 += dataEncrypt1.final('hex');
+            // const dataEncrypt1 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
+            // let dataCipher1 = dataEncrypt1.update(dataJson.celcius, 'utf8', 'hex');
+            // dataCipher1 += dataEncrypt1.final('hex');
 
-            const dataEncrypt2 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
-            let dataCipher2 = dataEncrypt2.update(dataJson.humidity, 'utf8', 'hex');
-            dataCipher2 += dataEncrypt2.final('hex');
+            // const dataEncrypt2 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
+            // let dataCipher2 = dataEncrypt2.update(dataJson.humidity, 'utf8', 'hex');
+            // dataCipher2 += dataEncrypt2.final('hex');
 
-            const payloadEnc = {
-                celcius: dataCipher1,
-                humidity: dataCipher2,
-            };
-            const newData = await new UdaraEnc(payloadEnc).save()
+            // const payloadEnc = {
+            //     celcius: dataCipher1,
+            //     humidity: dataCipher2,
+            // };
+            const newData = await new UdaraEnc(dataJson).save()
             const temperature = await UdaraEnc.find({});
 
             const temperatureMap = temperature.map((suhuDataMap, index) => {
@@ -171,7 +172,9 @@ module.exports = {
                         suhuCalender.getSeconds(),
                 };
             });
-            socket.socketConnection.socket.emit("dataUdara", temperatureMap.slice(-4))
+            socket.socketConnection.socket.emit("dataUdara", temperature.slice(-4))
+
+            socket.socketConnection.socket.emit("dataGraphUdara", temperatureMap.slice(-4))
         } catch (error) {
             console.error(`Error ${error.message}`)
         }
@@ -189,20 +192,20 @@ module.exports = {
         const rawData = payload.toString()
         try {
             const dataJson = await JSON.parse(rawData)
-            const dataEncrypt1 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
-            let dataCipher1 = dataEncrypt1.update(dataJson.kelembapanTanah, 'utf8', 'hex');
-            dataCipher1 += dataEncrypt1.final('hex');
+            // const dataEncrypt1 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
+            // let dataCipher1 = dataEncrypt1.update(dataJson.kelembapanTanah, 'utf8', 'hex');
+            // dataCipher1 += dataEncrypt1.final('hex');
 
-            const dataEncrypt2 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
-            let dataCipher2 = dataEncrypt2.update(dataJson.phTanah, 'utf8', 'hex');
-            dataCipher2 += dataEncrypt2.final('hex');
+            // const dataEncrypt2 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
+            // let dataCipher2 = dataEncrypt2.update(dataJson.phTanah, 'utf8', 'hex');
+            // dataCipher2 += dataEncrypt2.final('hex');
 
-            const payloadEnc = {
-                kelembapanTanah: dataCipher1,
-                phTanah: dataCipher2,
-            };
+            // const payloadEnc = {
+            //     kelembapanTanah: dataCipher1,
+            //     phTanah: dataCipher2,
+            // };
 
-            const newData = await new TanahEnc(payloadEnc).save()
+            const newData = await new TanahEnc(dataJson).save()
 
             const soilData = await TanahEnc.find({});
 
@@ -235,7 +238,10 @@ module.exports = {
                         soilCalender.getSeconds(),
                 };
             });
-            socket.socketConnection.socket.emit("dataTanah", soilDataMap.slice(-4))
+            socket.socketConnection.socket.emit("dataTanah", soilData)
+
+            socket.socketConnection.socket.emit("dataGraphTanah", soilDataMap.slice(-4))
+
 
             // const newData = await new TanahEnc(payloadEnc).save()
         } catch (error) {
