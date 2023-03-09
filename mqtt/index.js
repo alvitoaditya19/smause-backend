@@ -1,5 +1,5 @@
 const mqtt = require("mqtt");
-const { storeData, storeDataUdara, storeDataTanah, storeDataAir, storeDataAirEnc, storeDataUdaraEnc, storeDataTanahEnc, GetDataControl, storeDataKelembapatanTanahEnc} = require("./dataHandler");
+const { storeData, storeDataUdara, storeDataTanah, storeDataAir, storeDataAirEnc, storeDataUdaraEnc, storeDataTanahEnc, GetDataControl,storeDataKelembapanTanah, storeDataKelembapatanTanahEnc} = require("./dataHandler");
 
 
 const host = 'tos.kirei.co.id';
@@ -23,7 +23,8 @@ client.on('connect', () => {
     client.subscribe('intern-KIREI/IOT/AirEnc', () => console.log('intern-KIREI/IOT/AirEnc subscribed'));
     client.subscribe('intern-KIREI/IOT/UdaraEnc', () => console.log('intern-KIREI/IOT/UdaraEnc subscribed'));
     client.subscribe('intern-KIREI/IOT/TanahEnc', () => console.log('intern-KIREI/IOT/TanahEnc subscribed'));
-    client.subscribe('intern-KIREI/IOT/KelembapanTanahEnc', () => console.log('intern-KIREI/IOT/TanahEnc subscribed'));
+    client.subscribe('intern-KIREI/IOT/KelembapanTanah', () => console.log('intern-KIREI/IOT/KelembapanTanah subscribed'));
+    client.subscribe('intern-KIREI/IOT/KelembapanTanahEnc', () => console.log('intern-KIREI/IOT/KelembapanTanahEnc subscribed'));
 
 })
 
@@ -50,6 +51,8 @@ client.on('message', (topic, payload) => {
         storeDataTanahEnc(payload)
     }else if (topic === 'intern-KIREI/IOT/KelembapanTanahEnc') {
         storeDataKelembapatanTanahEnc(payload)
+    }  else if (topic === 'intern-KIREI/IOT/KelembapanTanah') {
+        storeDataKelembapanTanah(payload)
     }
 })
 
