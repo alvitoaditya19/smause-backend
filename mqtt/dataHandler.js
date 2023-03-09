@@ -5,6 +5,8 @@ const Udara = require("../app/temperature/model");
 
 const AirEnc = require("../app/water/model-enc");
 const TanahEnc = require("../app/soil/model-enc");
+const Message = require("../app/message/model");
+
 const UdaraEnc = require("../app/temperature/model-enc");
 
 const crypto = require('crypto');
@@ -42,6 +44,20 @@ module.exports = {
         try {
             const dataJson = await JSON.parse(rawData)
 
+            const badData = new Control({
+                lamp1: dataJson.lamp1,
+                lamp2: dataJson.lamp2,
+                pump1: dataJson.pump1,
+                pump2: dataJson.pump2,
+                valve: dataJson.valve,
+                blend: dataJson.blend,
+                status:  dataJson.status
+              });
+              const error = badData.validateSync();
+            
+              if(error){
+                return Error()
+              }
             await Control.findByIdAndUpdate(
                 {
                   _id: "63d1decc37a463ae302eeba3",
@@ -337,6 +353,19 @@ module.exports = {
 
 
             // const newData = await new TanahEnc(payloadEnc).save()
+        } catch (error) {
+            console.error(`Error ${error.message}`)
+        }
+    },
+    storeDataMessage: async (payload) => {
+        const rawData = payload.toString()
+        try {
+            const dataJson = await JSON.parse(rawData)
+        
+            // const newData = await new Message(dataJson).save()
+
+            socket.socketConnection.socket.emit("dataMessaage", dataJson)
+
         } catch (error) {
             console.error(`Error ${error.message}`)
         }
