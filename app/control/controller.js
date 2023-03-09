@@ -21,7 +21,8 @@ module.exports = {
           pump1,
           pump2,
           valve,
-          blend
+          blend,
+          status
         },
         { new: true, useFindAndModify: false }
       );
@@ -32,7 +33,8 @@ module.exports = {
         pump1: controlData.pump1,
         pump2: controlData.pump2,
         valve: controlData.valve,
-        blend: controlData.blend
+        blend: controlData.blend,
+        status: controlData.status
       }
 
       const dataJsonControl = await JSON.stringify(payloadControl)

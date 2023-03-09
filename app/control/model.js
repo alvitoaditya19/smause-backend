@@ -35,6 +35,7 @@ const controlSchema = mongoose.Schema({
     type: String,
     enum: ["ON", "OFF"],
     default: "ON",
+    require: true,
   },
 },{ timestamps: true });
 

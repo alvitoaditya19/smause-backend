@@ -30,7 +30,7 @@ module.exports = {
     },
     GetDataControl: async (payload) => {
         try {
-            const newData = await Control.findOne().select('lamp1 lamp2 pump1 pump2 valve blend');
+            const newData = await Control.findOne().select('lamp1 lamp2 pump1 pump2 valve blend status');
             console.log(newData)
         } catch (error) {
             console.error(`Error ${error.message}`)
@@ -107,7 +107,7 @@ module.exports = {
                         waterCalender.getSeconds(),
                 };
             });
-            socket.socketConnection.socket.emit("dataAir", water)
+            socket.socketConnection.socket.emit("dataCardAir", water)
 
             socket.socketConnection.socket.emit("dataGraphAir", waterMap.slice(-4))
 
@@ -172,7 +172,7 @@ module.exports = {
                         suhuCalender.getSeconds(),
                 };
             });
-            socket.socketConnection.socket.emit("dataUdara", temperature.slice(-4))
+            socket.socketConnection.socket.emit("dataCardUdara", temperatureMap.slice(-1))
 
             socket.socketConnection.socket.emit("dataGraphUdara", temperatureMap.slice(-4))
         } catch (error) {
@@ -238,7 +238,67 @@ module.exports = {
                         soilCalender.getSeconds(),
                 };
             });
-            socket.socketConnection.socket.emit("dataTanah", soilData)
+            socket.socketConnection.socket.emit("dataCardTanah", soilData)
+
+            socket.socketConnection.socket.emit("dataGraphTanah", soilDataMap.slice(-4))
+
+
+            // const newData = await new TanahEnc(payloadEnc).save()
+        } catch (error) {
+            console.error(`Error ${error.message}`)
+        }
+    },
+    storeDataKelembapatanTanahEnc: async (payload) => {
+        const rawData = payload.toString()
+        try {
+            const dataJson = await JSON.parse(rawData)
+            // const dataEncrypt1 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
+            // let dataCipher1 = dataEncrypt1.update(dataJson.kelembapanTanah, 'utf8', 'hex');
+            // dataCipher1 += dataEncrypt1.final('hex');
+
+            // const dataEncrypt2 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
+            // let dataCipher2 = dataEncrypt2.update(dataJson.phTanah, 'utf8', 'hex');
+            // dataCipher2 += dataEncrypt2.final('hex');
+
+            // const payloadEnc = {
+            //     kelembapanTanah: dataCipher1,
+            //     phTanah: dataCipher2,
+            // };
+
+            const newData = await new TanahEnc(dataJson).save()
+
+            const soilData = await TanahEnc.find({});
+
+            const soilDataMap = soilData.map((soilDataMap, index) => {
+                const soilCalender = new Date(soilDataMap.createdAt);
+                const dataDecipher1 = crypto.createDecipheriv(cryptoAlgorithm, key, iv);
+                let decKelembapanTanah = dataDecipher1.update(soilDataMap.kelembapanTanah, 'hex', 'utf8');
+                decKelembapanTanah += dataDecipher1.final('utf8');
+
+                const dataDecipher2 = crypto.createDecipheriv(cryptoAlgorithm, key, iv);
+                let decPhTanah = dataDecipher2.update(soilDataMap.phTanah, 'hex', 'utf8');
+                decPhTanah += dataDecipher2.final('utf8');
+
+                return {
+                    no: index + 1,
+                    id: soilDataMap.id,
+                    kelembapanTanah: decKelembapanTanah,
+                    phTanah: decPhTanah,
+                    date:
+                        soilCalender.getDate() +
+                        " - " +
+                        (soilCalender.getMonth() + 1) +
+                        " - " +
+                        soilCalender.getFullYear(),
+                    time:
+                        soilCalender.getHours() +
+                        ":" +
+                        soilCalender.getMinutes() +
+                        ":" +
+                        soilCalender.getSeconds(),
+                };
+            });
+            socket.socketConnection.socket.emit("dataCardTanah", soilData)
 
             socket.socketConnection.socket.emit("dataGraphTanah", soilDataMap.slice(-4))
 
