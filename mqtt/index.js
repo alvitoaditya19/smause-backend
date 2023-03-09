@@ -1,5 +1,5 @@
 const mqtt = require("mqtt");
-const { storeData, storeDataUdara, storeDataTanah, storeDataAir, storeDataAirEnc, storeDataUdaraEnc, storeDataTanahEnc, GetDataControl,storeDataKelembapanTanah, storeDataKelembapatanTanahEnc} = require("./dataHandler");
+const { storeData, storeDataUdara, storeDataTanah, storeDataAir, storeDataAirEnc, storeDataUdaraEnc, storeDataTanahEnc, GetDataControl,StoreDataControl,storeDataKelembapanTanah, storeDataKelembapatanTanahEnc} = require("./dataHandler");
 
 
 const host = 'tos.kirei.co.id';
@@ -17,6 +17,7 @@ client.on('connect', () => {
     console.log("MQTT Broker connected");
     client.subscribe('intern-KIREI/IOT', () => console.log('intern-KIREI/IOT subscribed'));
     client.subscribe('intern-KIREI/IOT/Control', () => console.log('intern-KIREI/IOT/Control subscribed'));
+    client.subscribe('intern-KIREI/IOT/StoreControl', () => console.log('intern-KIREI/IOT/StoreControl subscribed'));
     client.subscribe('intern-KIREI/IOT/Air', () => console.log('intern-KIREI/IOT/Air subscribed'));
     client.subscribe('intern-KIREI/IOT/Udara', () => console.log('intern-KIREI/IOT/Udara subscribed'));
     client.subscribe('intern-KIREI/IOT/Tanah', () => console.log('intern-KIREI/IOT/Tanah subscribed'));
@@ -33,6 +34,9 @@ client.on('message', (topic, payload) => {
         storeData(payload)
     } else if (topic === 'intern-KIREI/IOT/Control') {
         GetDataControl(payload)
+    }
+    else if (topic === 'intern-KIREI/IOT/StoreControl') {
+        StoreDataControl(payload)
     }
     else if (topic === 'intern-KIREI/IOT/Air') {
         storeDataAir(payload)

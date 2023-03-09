@@ -10,7 +10,8 @@ const UdaraEnc = require("../app/temperature/model-enc");
 const crypto = require('crypto');
 const { encode } = require("js-base64");
 
-const socket = require('../bin/www')
+const socket = require('../bin/www');
+const { raw } = require("express");
 
 
 const cryptoAlgorithm = 'aes-128-cbc';
@@ -32,6 +33,29 @@ module.exports = {
         try {
             const newData = await Control.findOne().select('lamp1 lamp2 pump1 pump2 valve blend status');
             console.log(newData)
+        } catch (error) {
+            console.error(`Error ${error.message}`)
+        }
+    },
+    StoreDataControl: async (payload) => {
+        const rawData = payload.toString()
+        try {
+            const dataJson = await JSON.parse(rawData)
+
+            await Control.findByIdAndUpdate(
+                {
+                  _id: "63d1decc37a463ae302eeba3",
+                },
+                {
+                  lamp1: dataJson.lamp1,
+                  lamp2: dataJson.lamp2,
+                  pump1: dataJson.pump1,
+                  pump2: dataJson.pump2,
+                  valve: dataJson.valve,
+                  blend: dataJson.blend,
+                  status:  dataJson.status
+                },
+              )
         } catch (error) {
             console.error(`Error ${error.message}`)
         }
