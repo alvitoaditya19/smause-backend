@@ -51,7 +51,8 @@ client.on('message', (topic, payload) => {
     }
     else if (topic === 'intern-KIREI/IOT/AirEnc') {
         storeDataAirEnc(payload)
-    } else if (topic === 'intern-KIREI/IOT/UdaraEnc') {
+    } 
+    else if (topic === 'intern-KIREI/IOT/UdaraEnc') {
         storeDataUdaraEnc(payload)
     }
     else if (topic === 'intern-KIREI/IOT/TanahEnc') {

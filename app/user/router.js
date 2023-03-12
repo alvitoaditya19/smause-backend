@@ -1,6 +1,6 @@
 var express = require("express");
 var router = express.Router();
-const { actionCreate, signin, getUser, actionEdit, actionDelete, detailUser,getUserr } = require("./controller");
+const { actionCreate, signin, getUser, actionEdit, actionDelete, detailUser,getUserr,editProfile } = require("./controller");
 const multer = require("multer");
 const { isLoginAdmin, } = require("../middleware/auth");
 
@@ -14,6 +14,12 @@ router.put(
   isLoginAdmin,
   multer({ dest: os.tmpdir() }).single("avatar"),
   actionEdit
+);
+
+router.put('/profile/:id',
+isLoginAdmin,
+  multer({ dest: os.tmpdir() }).single('image'),
+  editProfile
 );
 
 router.get("/", isLoginAdmin, getUser);

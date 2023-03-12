@@ -10,11 +10,7 @@ const Message = require("../app/message/model");
 const UdaraEnc = require("../app/temperature/model-enc");
 
 const crypto = require('crypto');
-const { encode } = require("js-base64");
-
 const socket = require('../bin/www');
-const { raw } = require("express");
-
 
 const cryptoAlgorithm = 'aes-128-cbc';
 const key = 'tugasakhir421654'; //16 karakter
@@ -89,6 +85,8 @@ module.exports = {
         const rawData = payload.toString()
         try {
             const dataJson = await JSON.parse(rawData)
+            await AirEnc(dataJson).save()
+
             // const dataEncrypt1 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
             // let dataCipher1 = dataEncrypt1.update(dataJson.ketinggianAir, 'utf8', 'hex');
             // dataCipher1 += dataEncrypt1.final('hex');
@@ -107,7 +105,6 @@ module.exports = {
             //     kekeruhanAir: dataCipher3
             // };
 
-            const newData = await new AirEnc(dataJson).save()
 
             const water = await AirEnc.find({});
 
@@ -147,6 +144,7 @@ module.exports = {
                         waterCalender.getSeconds(),
                 };
             });
+
             socket.socketConnection.socket.emit("dataCardAir", water)
 
             socket.socketConnection.socket.emit("dataGraphAir", waterMap.slice(-4))
@@ -362,7 +360,7 @@ module.exports = {
         try {
             const dataJson = await JSON.parse(rawData)
         
-            // const newData = await new Message(dataJson).save()
+            const newData = await new Message(dataJson).save()
 
             socket.socketConnection.socket.emit("dataMessaage", dataJson)
 

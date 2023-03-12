@@ -49,7 +49,7 @@ const controlSchema = mongoose.Schema({
     },
     default: "ON",
   },
-  status: {
+  statusControl: {
     type: String,
     enum: {
       values: ["ON", "OFF"],

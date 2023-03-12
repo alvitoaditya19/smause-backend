@@ -5,7 +5,7 @@ const mqtt = require('mqtt')
 module.exports = {
   actionStatusControl: async (req, res) => {
     try {
-      const { lamp1, lamp2, pump1, pump2, valve, blend } = req.body;
+      const { lamp1, lamp2, pump1, pump2, valve, blend, statusControl } = req.body;
       const host = 'tos.kirei.co.id';
       const clientId = `mqtt_${Math.random().toString(16).slice(3)}`;
       const connectUrl = `mqtt://${host}}`;
@@ -22,7 +22,7 @@ module.exports = {
           pump2,
           valve,
           blend,
-          status
+          statusControl
         },
         { new: true, useFindAndModify: false }
       );
@@ -34,7 +34,7 @@ module.exports = {
         pump2: controlData.pump2,
         valve: controlData.valve,
         blend: controlData.blend,
-        status: controlData.status
+        statusControl: controlData.statusControl
       }
 
       const dataJsonControl = await JSON.stringify(payloadControl)
