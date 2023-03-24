@@ -366,10 +366,13 @@ module.exports = {
         src.on('end', async () => {
           let user = await User.findOne({ _id: req.user._id })
 
-          let currentImage = `${config.rootPath}/public/uploads/${user.avatar}`;
-          if (fs.existsSync(currentImage)) {
-            fs.unlinkSync(currentImage)
+          if(user.avatar !== ""){
+            let currentImage = `${config.rootPath}/public/uploads/${user.avatar}`;
+            if (fs.existsSync(currentImage)) {
+              fs.unlinkSync(currentImage)
+            }
           }
+ 
 
           user = await User.findOneAndUpdate({
             _id: req.user._id

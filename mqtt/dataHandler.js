@@ -85,25 +85,25 @@ module.exports = {
         const rawData = payload.toString()
         try {
             const dataJson = await JSON.parse(rawData)
-            await AirEnc(dataJson).save()
+            const newData =  await AirEnc(dataJson).save()
 
-            // const dataEncrypt1 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
-            // let dataCipher1 = dataEncrypt1.update(dataJson.ketinggianAir, 'utf8', 'hex');
-            // dataCipher1 += dataEncrypt1.final('hex');
+            const dataEncrypt1 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
+            let dataCipher1 = dataEncrypt1.update(dataJson.ketinggianAir, 'utf8', 'hex');
+            dataCipher1 += dataEncrypt1.final('hex');
 
-            // const dataEncrypt2 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
-            // let dataCipher2 = dataEncrypt2.update(dataJson.oksigen, 'utf8', 'hex');
-            // dataCipher2 += dataEncrypt2.final('hex');
+            const dataEncrypt2 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
+            let dataCipher2 = dataEncrypt2.update(dataJson.oksigen, 'utf8', 'hex');
+            dataCipher2 += dataEncrypt2.final('hex');
 
-            // const dataEncrypt3 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
-            // let dataCipher3 = dataEncrypt3.update(dataJson.kekeruhanAir, 'utf8', 'hex');
-            // dataCipher3 += dataEncrypt3.final('hex');
+            const dataEncrypt3 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
+            let dataCipher3 = dataEncrypt3.update(dataJson.kekeruhanAir, 'utf8', 'hex');
+            dataCipher3 += dataEncrypt3.final('hex');
 
-            // const payloadEnc = {
-            //     ketinggianAir: dataCipher1,
-            //     oksigen: dataCipher2,
-            //     kekeruhanAir: dataCipher3
-            // };
+            const payloadEnc = {
+                ketinggianAir: dataCipher1,
+                oksigen: dataCipher2,
+                kekeruhanAir: dataCipher3
+            };
 
 
             const water = await AirEnc.find({});
@@ -144,8 +144,9 @@ module.exports = {
                         waterCalender.getSeconds(),
                 };
             });
+            console.log("adojaiodjoa", dataJson.oksigen)
 
-            socket.socketConnection.socket.emit("dataCardAir", water)
+            socket.socketConnection.socket.emit("dataCardAir", waterMap.slice(-1))
 
             socket.socketConnection.socket.emit("dataGraphAir", waterMap.slice(-4))
 
@@ -259,18 +260,18 @@ module.exports = {
             const soilDataMap = soilData.map((soilDataMap, index) => {
                 const soilCalender = new Date(soilDataMap.createdAt);
                 const dataDecipher1 = crypto.createDecipheriv(cryptoAlgorithm, key, iv);
-                let decCelcius = dataDecipher1.update(soilDataMap.kelembapanTanah, 'hex', 'utf8');
-                decCelcius += dataDecipher1.final('utf8');
+                let decKelembapanTanah = dataDecipher1.update(soilDataMap.kelembapanTanah, 'hex', 'utf8');
+                decKelembapanTanah += dataDecipher1.final('utf8');
 
                 const dataDecipher2 = crypto.createDecipheriv(cryptoAlgorithm, key, iv);
-                let decHumidty = dataDecipher2.update(soilDataMap.phTanah, 'hex', 'utf8');
-                decHumidty += dataDecipher2.final('utf8');
+                let decPhTanah = dataDecipher2.update(soilDataMap.phTanah, 'hex', 'utf8');
+                decPhTanah += dataDecipher2.final('utf8');
 
                 return {
                     no: index + 1,
                     id: soilDataMap.id,
-                    kelembapanTanah: decCelcius,
-                    phTanah: decHumidty,
+                    kelembapanTanah: decKelembapanTanah,
+                    phTanah: decPhTanah,
                     date:
                         soilCalender.getDate() +
                         " - " +
@@ -285,7 +286,7 @@ module.exports = {
                         soilCalender.getSeconds(),
                 };
             });
-            socket.socketConnection.socket.emit("dataCardTanah", soilData)
+            socket.socketConnection.socket.emit("dataCardTanah",  soilDataMap.slice(-1))
 
             socket.socketConnection.socket.emit("dataGraphTanah", soilDataMap.slice(-4))
 
