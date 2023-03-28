@@ -33,8 +33,8 @@ let userSchema = mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["admin", "user", "petani"],
-    default: "user",
+    enum: ["admin", "petani"],
+    default: "petani",
   },
   avatar:{
     type: String,

@@ -30,10 +30,6 @@ module.exports = {
         throw new Error();
       }
 
-      if(data.user.status == "user"){
-        throw new Error();
-      }
-
       req.user = user
       req.token = token
       next()

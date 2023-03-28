@@ -144,7 +144,7 @@ module.exports = {
           try {
             const user = await User.findOne({ _id: id });
 
-            let currentImage = `${config.rootPath}/public/uploads/${user.thumbnial}`;
+            let currentImage = `${config.rootPath}/public/uploads/${user.avatar}`;
             if (fs.existsSync(currentImage)) {
               fs.unlinkSync(currentImage);
             }
