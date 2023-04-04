@@ -211,10 +211,11 @@ module.exports = {
       const user = await User.findOneAndRemove({
         _id: id,
       });
-
-      let currentImage = `${config.rootPath}/public/uploads/${user.avatar}`;
-      if (fs.existsSync(currentImage)) {
-        fs.unlinkSync(currentImage);
+      if(user.avatar !== ""){
+        let currentImage = `${config.rootPath}/public/uploads/${user.avatar}`;
+        if (fs.existsSync(currentImage)) {
+          fs.unlinkSync(currentImage)
+        }
       }
       res.json({ message: "User have been removed!" });
     } catch (err) {
