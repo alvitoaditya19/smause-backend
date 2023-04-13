@@ -1,7 +1,5 @@
 const Soil = require("./model");
 const SoilEnc = require("./model-enc");
-const SoiKelemlEnc = require("./modelKelem-enc");
-
 
 const { Parser } = require("json2csv");
 const crypto = require('crypto');
@@ -23,60 +21,14 @@ module.exports = {
         page = 1;
       }
       const soilData = await SoilEnc.find({});
-      const soilKelemData = await SoiKelemlEnc.find({});
 
-      const all = [...soilData, ...soilKelemData]
-
-
-      const soilDatMap = all.map((soilDataMap, index) => {
+      const soilDatMap = soilData.map((soilDataMap, index) => {
         const soilCalender = new Date(soilDataMap.createdAt);
         return {
           no: index + 1,
           id: soilDataMap.id,
           kelembapanTanah: soilDataMap.kelembapanTanah,
           phTanah: soilDataMap.phTanah,
-          date:
-            soilCalender.getDate() +
-            " - " +
-            (soilCalender.getMonth() + 1) +
-            " - " +
-            soilCalender.getFullYear(),
-          time:
-            soilCalender.getHours() +
-            ":" +
-            soilCalender.getMinutes() +
-            ":" +
-            soilCalender.getSeconds(),
-        };
-      });
-
-      const soilDatMapPart1 = soilData.map((soilDataMap, index) => {
-        const soilCalender = new Date(soilDataMap.createdAt);
-        return {
-          no: index + 1,
-          id: soilDataMap.id,
-          phTanah: soilDataMap.phTanah,
-          date:
-            soilCalender.getDate() +
-            " - " +
-            (soilCalender.getMonth() + 1) +
-            " - " +
-            soilCalender.getFullYear(),
-          time:
-            soilCalender.getHours() +
-            ":" +
-            soilCalender.getMinutes() +
-            ":" +
-            soilCalender.getSeconds(),
-        };
-      });
-
-      const soilDatMapPart2 = soilKelemData.map((soilDataMap, index) => {
-        const soilCalender = new Date(soilDataMap.createdAt);
-        return {
-          no: index + 1,
-          id: soilDataMap.id,
-          kelembapanTanah: soilDataMap.kelembapanTanah,
           date:
             soilCalender.getDate() +
             " - " +
@@ -97,15 +49,9 @@ module.exports = {
       const endIndex = page * limit;
       const result = soilDatMap.slice(startIndex, endIndex);
 
-      const resultMapPArt1 = soilDatMapPart1.slice(startIndex, endIndex);
-      const resultMapPArt2 = soilDatMapPart2.slice(startIndex, endIndex);
-
-
       res.status(201).json({
         total: totalSoil,
         data: result,
-        dataSoil: resultMapPArt1,
-        dataSoilKelem: resultMapPArt2,
       });
     } catch (err) {
       res.status(500).json({
@@ -124,13 +70,12 @@ module.exports = {
         page = 1;
       }
       const soilData = await SoilEnc.find({});
-      const soilKelemData = await SoiKelemlEnc.find({});
 
       const soilDataMap = soilData.map((soilDataMap, index) => {
         const soilCalender = new Date(soilDataMap.createdAt);
-        // const dataDecipher1 = crypto.createDecipheriv(cryptoAlgorithm , key, iv);
-        // let decCelcius = dataDecipher1.update(soilDataMap.kelembapanTanah,  'hex', 'utf8');
-        // decCelcius += dataDecipher1.final('utf8');
+        const dataDecipher1 = crypto.createDecipheriv(cryptoAlgorithm , key, iv);
+        let decCelcius = dataDecipher1.update(soilDataMap.kelembapanTanah,  'hex', 'utf8');
+        decCelcius += dataDecipher1.final('utf8');
   
         const dataDecipher2 = crypto.createDecipheriv(cryptoAlgorithm , key, iv);
         let decHumidty = dataDecipher2.update(soilDataMap.phTanah,  'hex', 'utf8');
@@ -139,7 +84,7 @@ module.exports = {
         return {
           no: index + 1,
           id: soilDataMap.id,
-          // kelembapanTanah: decCelcius,
+          kelembapanTanah: decCelcius,
           phTanah: decHumidty,
           date:
             soilCalender.getDate() +
@@ -155,48 +100,15 @@ module.exports = {
             soilCalender.getSeconds(),
         };
       });
-
-      const soilDataKelemMap = soilKelemData.map((soilDataMap, index) => {
-        const soilCalender = new Date(soilDataMap.createdAt);
-        const dataDecipher1 = crypto.createDecipheriv(cryptoAlgorithm , key, iv);
-        let decCelcius = dataDecipher1.update(soilDataMap.kelembapanTanah,  'hex', 'utf8');
-        decCelcius += dataDecipher1.final('utf8');
-  
-        // const dataDecipher2 = crypto.createDecipheriv(cryptoAlgorithm , key, iv);
-        // let decHumidty = dataDecipher2.update(soilDataMap.phTanah,  'hex', 'utf8');
-        // decHumidty += dataDecipher2.final('utf8');
-
-        return {
-          no: index + 1,
-          id: soilDataMap.id,
-          kelembapanTanah: decCelcius,
-          // phTanah: decHumidty,
-          date:
-            soilCalender.getDate() +
-            " - " +
-            (soilCalender.getMonth() + 1) +
-            " - " +
-            soilCalender.getFullYear(),
-          time:
-            soilCalender.getHours() +
-            ":" +
-            soilCalender.getMinutes() +
-            ":" +
-            soilCalender.getSeconds(),
-        };
-      });
-
-      const all = [...soilDataMap, ...soilDataKelemMap]
-
-      const totalSoil = all.length;
+      const totalSoil = soilDataMap.length;
 
       const startIndex = (page - 1) * limit;
       const endIndex = page * limit;
-      const result = all.slice(startIndex, endIndex);
+      const result = soilDataMap.slice(startIndex, endIndex);
 
       res.status(201).json({
         total: totalSoil,
-        data: all,
+        data: result,
       });
     } catch (err) {
       res.status(500).json({
@@ -264,28 +176,17 @@ module.exports = {
     try {
       const { kelembapanTanah, phTanah } = req.body;
 
-      // const dataEncrypt1 = crypto.createCipheriv(cryptoAlgorithm , key, iv);
-      // let dataCipher1 = dataEncrypt1.update(kelembapanTanah, 'utf8', 'hex');
-      // dataCipher1 += dataEncrypt1.final('hex');
+      const dataEncrypt1 = crypto.createCipheriv(cryptoAlgorithm , key, iv);
+      let dataCipher1 = dataEncrypt1.update(kelembapanTanah, 'utf8', 'hex');
+      dataCipher1 += dataEncrypt1.final('hex');
 
-      // const dataEncrypt2 = crypto.createCipheriv(cryptoAlgorithm , key, iv);
-      // let dataCipher2 = dataEncrypt2.update(phTanah, 'utf8', 'hex');
-      // dataCipher2 += dataEncrypt2.final('hex');
+      const dataEncrypt2 = crypto.createCipheriv(cryptoAlgorithm , key, iv);
+      let dataCipher2 = dataEncrypt2.update(phTanah, 'utf8', 'hex');
+      dataCipher2 += dataEncrypt2.final('hex');
 
-      // const payload = {
-      //   kelembapanTanah: dataCipher1,
-      //   phTanah: dataCipher2,
-      // };
-
-      // const soil = new SoilEnc(payload);
-      // await soil.save();
-
-      // res.status(201).json({ data: soil });
-
-      
       const payload = {
-        kelembapanTanah: kelembapanTanah,
-        phTanah: phTanah,
+        kelembapanTanah: dataCipher1,
+        phTanah: dataCipher2,
       };
 
       const soil = new SoilEnc(payload);
