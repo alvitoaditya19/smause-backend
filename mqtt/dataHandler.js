@@ -211,9 +211,11 @@ module.exports = {
         try {
             const dataJson = await JSON.parse(rawData)
             const payloadEnc = {
-                humidity: dataJson.humidity ?? "30039b4d60c8126a163c1805ba1882fb",
-                celcius: dataJson.celcius ?? "30039b4d60c8126a163c1805ba1882fb",
+                humidity: dataJson.humidity ?? "0",
+                celcius: dataJson.celcius ?? "0",
             };
+
+            console.log("aduahoda", payloadEnc)
             const newData = await new Udara(payloadEnc).save()
 
             const temperature = await Udara.find({});
@@ -333,8 +335,8 @@ module.exports = {
                 return {
                     no: index + 1,
                     id: soilDataMap.id,
-                    kelembapanTanah: decKelembapanTanah ?? 0,
-                    phTanah: decPhTanah ?? 0,
+                    kelembapanTanah: decKelembapanTanah,
+                    phTanah: decPhTanah,
                     date:
                         soilCalender.getDate() +
                         " - " +
@@ -422,8 +424,8 @@ module.exports = {
                 return {
                     no: index + 1,
                     id: soilDataMap.id,
-                    kelembapanTanah: decKelembapanTanah ?? 0,
-                    phTanah: decPhTanah ?? 0,
+                    kelembapanTanah: decKelembapanTanah,
+                    phTanah: decPhTanah,
                     date:
                         soilCalender.getDate() +
                         " - " +
