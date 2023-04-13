@@ -176,17 +176,57 @@ module.exports = {
     try {
       const { celcius, humidity } = req.body;
 
-      const dataEncrypt1 = crypto.createCipheriv(cryptoAlgorithm , key, iv);
-      let dataCipher1 = dataEncrypt1.update(celcius, 'utf8', 'hex');
-      dataCipher1 += dataEncrypt1.final('hex');
+      // if(!celcius){
+      //   const dataEncrypt2 = crypto.createCipheriv(cryptoAlgorithm , key, iv);
+      //   let dataCipher2 = dataEncrypt2.update(humidity, 'utf8', 'hex');
+      //   dataCipher2 += dataEncrypt2.final('hex');
 
-      const dataEncrypt2 = crypto.createCipheriv(cryptoAlgorithm , key, iv);
-      let dataCipher2 = dataEncrypt2.update(humidity, 'utf8', 'hex');
-      dataCipher2 += dataEncrypt2.final('hex');
+      //   const payload = {
+      //     // celcius: dataCipher1,
+      //     humidity: dataCipher2,
+      //   };
+  
+      //   const suhu = new TemperatureEnc(payload);
+      //   await suhu.save();
+  
+      //   res.status(200).json({ data: suhu });
+      // }else if(!humidity){
+      //   const dataEncrypt1 = crypto.createCipheriv(cryptoAlgorithm , key, iv);
+      //   let dataCipher1 = dataEncrypt1.update(celcius, 'utf8', 'hex');
+      //   dataCipher1 += dataEncrypt1.final('hex');
+
+      //   const payload = {
+      //     celcius: dataCipher1,
+      //     // humidity: dataCipher2,
+      //   };
+  
+      //   const suhu = new TemperatureEnc(payload);
+      //   await suhu.save();
+  
+      //   res.status(200).json({ data: suhu });
+      // }else{
+      //   const dataEncrypt2 = crypto.createCipheriv(cryptoAlgorithm , key, iv);
+      //   let dataCipher2 = dataEncrypt2.update(humidity, 'utf8', 'hex');
+      //   dataCipher2 += dataEncrypt2.final('hex');
+
+      //   const dataEncrypt1 = crypto.createCipheriv(cryptoAlgorithm , key, iv);
+      //   let dataCipher1 = dataEncrypt1.update(celcius, 'utf8', 'hex');
+      //   dataCipher1 += dataEncrypt1.final('hex');
+
+      //   const payload = {
+      //     celcius: dataCipher1,
+      //     humidity: dataCipher2,
+      //   };
+  
+      //   const suhu = new TemperatureEnc(payload);
+      //   await suhu.save();
+  
+      //   res.status(200).json({ data: suhu });
+      // }
 
       const payload = {
-        celcius: dataCipher1,
-        humidity: dataCipher2,
+        celcius: celcius,
+        humidity: humidity,
       };
 
       const suhu = new TemperatureEnc(payload);

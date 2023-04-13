@@ -211,44 +211,79 @@ module.exports = {
       });
     }
   },
-
-  postWater: async (req, res, next) => {
+  postWaterReal: async (req, res, next) => {
     try {
       const { ketinggianAir, oksigen, kekeruhanAir } = req.body;
 
-      const dataEncrypt1 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
-      let dataCipher1 = dataEncrypt1.update(ketinggianAir, 'utf8', 'hex');
-      dataCipher1 += dataEncrypt1.final('hex');
-
-      const dataEncrypt2 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
-      let dataCipher2 = dataEncrypt2.update(oksigen, 'utf8', 'hex');
-      dataCipher2 += dataEncrypt2.final('hex');
-
-      const dataEncrypt3 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
-      let dataCipher3 = dataEncrypt3.update(kekeruhanAir, 'utf8', 'hex');
-      dataCipher3 += dataEncrypt3.final('hex');
-
-      const payloadEnc = {
-        ketinggianAir: dataCipher1,
-        oksigen: dataCipher2,
-        kekeruhanAir: dataCipher3
-      };
-
-      const payloadReal = {
+      const payload = {
         ketinggianAir: ketinggianAir,
         oksigen: oksigen,
-        kekeruhanAir: kekeruhanAir,
-
+        kekeruhanAir:kekeruhanAir
       };
 
-      const waterReal = new Water(payloadReal);
-      const waterEnc = new WaterEnc(payloadEnc);
+      const water = new Water(payload);
+      await water.save();
 
-      await waterReal.save();
-      await waterEnc.save();
+      res.status(200).json({ data: water });
+    } catch (err) {
+      res.status(500).json({
+        message: err.message || `Internal Server Error`,
+      });
+    }
+  },
+  postWaterEnc: async (req, res, next) => {
+    try {
+      const { ketinggianAir, oksigen, kekeruhanAir } = req.body;
 
-      res.status(200).json({ dataReal: waterReal, dataEncrypt: waterEnc });
+      // const dataEncrypt1 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
+      // let dataCipher1 = dataEncrypt1.update(ketinggianAir, 'utf8', 'hex');
+      // dataCipher1 += dataEncrypt1.final('hex');
 
+      // const dataEncrypt2 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
+      // let dataCipher2 = dataEncrypt2.update(oksigen, 'utf8', 'hex');
+      // dataCipher2 += dataEncrypt2.final('hex');
+
+      // const dataEncrypt3 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
+      // let dataCipher3 = dataEncrypt3.update(kekeruhanAir, 'utf8', 'hex');
+      // dataCipher3 += dataEncrypt3.final('hex');
+
+      // const payloadEnc = {
+      //   ketinggianAir: dataCipher1,
+      //   oksigen: dataCipher2,
+      //   kekeruhanAir: dataCipher3
+      // };
+
+      // // const payloadReal = {
+      // //   ketinggianAir: ketinggianAir,
+      // //   oksigen: oksigen,
+      // //   kekeruhanAir: kekeruhanAir,
+
+      // // };
+
+      // // const waterReal = new Water(payloadReal);
+      // // const waterEnc = new WaterEnc(payloadEnc);
+
+      // // await waterReal.save();
+      // // await waterEnc.save();
+
+      // // res.status(200).json({ dataReal: waterReal, dataEncrypt: waterEnc });
+
+      // const waterEnc = new WaterEnc(payloadEnc);
+
+      // await waterEnc.save();
+
+      // res.status(201).json({ data: waterEnc });
+
+      const payload = {
+        ketinggianAir: ketinggianAir,
+        oksigen: oksigen,
+        kekeruhanAir:kekeruhanAir
+      };
+
+      const water = new WaterEnc(payload);
+      await water.save();
+
+      res.status(200).json({ data: water });
     } catch (err) {
       res.status(500).json({
         message: err.message || `Internal Server Error`,

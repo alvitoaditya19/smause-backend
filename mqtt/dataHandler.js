@@ -5,6 +5,8 @@ const Udara = require("../app/temperature/model");
 
 const AirEnc = require("../app/water/model-enc");
 const TanahEnc = require("../app/soil/model-enc");
+const TanahKelemEnc = require("../app/soil/modelKelem-enc");
+
 const Message = require("../app/message/model");
 
 const UdaraEnc = require("../app/temperature/model-enc");
@@ -231,7 +233,7 @@ module.exports = {
         const rawData = payload.toString()
         try {
             const dataJson = await JSON.parse(rawData)
-            const newData = await new Tanah(dataJson).save()
+            const newData = await new TanahKelemEnc(dataJson).save()
         } catch (error) {
             console.error(`Error ${error.message}`)
         }
@@ -259,9 +261,9 @@ module.exports = {
 
             const soilDataMap = soilData.map((soilDataMap, index) => {
                 const soilCalender = new Date(soilDataMap.createdAt);
-                const dataDecipher1 = crypto.createDecipheriv(cryptoAlgorithm, key, iv);
-                let decKelembapanTanah = dataDecipher1.update(soilDataMap.kelembapanTanah, 'hex', 'utf8');
-                decKelembapanTanah += dataDecipher1.final('utf8');
+                // const dataDecipher1 = crypto.createDecipheriv(cryptoAlgorithm, key, iv);
+                // let decKelembapanTanah = dataDecipher1.update(soilDataMap.kelembapanTanah, 'hex', 'utf8');
+                // decKelembapanTanah += dataDecipher1.final('utf8');
 
                 const dataDecipher2 = crypto.createDecipheriv(cryptoAlgorithm, key, iv);
                 let decPhTanah = dataDecipher2.update(soilDataMap.phTanah, 'hex', 'utf8');
@@ -270,7 +272,7 @@ module.exports = {
                 return {
                     no: index + 1,
                     id: soilDataMap.id,
-                    kelembapanTanah: decKelembapanTanah,
+                    // kelembapanTanah: decKelembapanTanah,
                     phTanah: decPhTanah,
                     date:
                         soilCalender.getDate() +
@@ -313,9 +315,9 @@ module.exports = {
             //     phTanah: dataCipher2,
             // };
 
-            const newData = await new TanahEnc(dataJson).save()
+            const newData = await new TanahKelemEnc(dataJson).save()
 
-            const soilData = await TanahEnc.find({});
+            const soilData = await TanahKelemEnc.find({});
 
             const soilDataMap = soilData.map((soilDataMap, index) => {
                 const soilCalender = new Date(soilDataMap.createdAt);
@@ -323,15 +325,10 @@ module.exports = {
                 let decKelembapanTanah = dataDecipher1.update(soilDataMap.kelembapanTanah, 'hex', 'utf8');
                 decKelembapanTanah += dataDecipher1.final('utf8');
 
-                const dataDecipher2 = crypto.createDecipheriv(cryptoAlgorithm, key, iv);
-                let decPhTanah = dataDecipher2.update(soilDataMap.phTanah, 'hex', 'utf8');
-                decPhTanah += dataDecipher2.final('utf8');
-
                 return {
                     no: index + 1,
                     id: soilDataMap.id,
                     kelembapanTanah: decKelembapanTanah,
-                    phTanah: decPhTanah,
                     date:
                         soilCalender.getDate() +
                         " - " +
@@ -346,9 +343,9 @@ module.exports = {
                         soilCalender.getSeconds(),
                 };
             });
-            socket.socketConnection.socket.emit("dataCardTanah", soilData)
+            socket.socketConnection.socket.emit("dataCardTanahKelem", soilData)
 
-            socket.socketConnection.socket.emit("dataGraphTanah", soilDataMap.slice(-4))
+            socket.socketConnection.socket.emit("dataGraphTanahKelem", soilDataMap.slice(-4))
 
 
             // const newData = await new TanahEnc(payloadEnc).save()

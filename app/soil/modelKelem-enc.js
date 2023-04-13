@@ -5,10 +5,10 @@ let soilSchema = mongoose.Schema({
     type: String,
     require: [true, "Kelembapan Tanah Harus Diisi"],
   },
-  phTanah: {
-    type: String,
-    require: [true, "PH Tanah Harus Diisi"],
-  },
+  // phTanah: {
+  //   type: String,
+  //   require: [true, "PH Tanah Harus Diisi"],
+  // },
 },{ timestamps: true });
 
-module.exports = mongoose.model("SoilEncrypt", soilSchema);
+module.exports = mongoose.model("SoilKelemEncrypt", soilSchema);
