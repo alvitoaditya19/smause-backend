@@ -84,6 +84,51 @@ module.exports = {
                 kekeruhanAir: dataJson.kekeruhanAir ?? "30039b4d60c8126a163c1805ba1882fb"
             };
             const newData = await new Air(payloadEnc).save()
+
+            const water = await Air.find({});
+
+            const waterMap = water.map((waterDataMap, index) => {
+                const waterCalender = new Date(waterDataMap.createdAt);
+
+                const dataDecipher1 = crypto.createDecipheriv(cryptoAlgorithm, key, iv);
+                let decKetinngianAir = dataDecipher1.update(waterDataMap.ketinggianAir, 'hex', 'utf8');
+                decKetinngianAir += dataDecipher1.final('utf8');
+
+                const dataDecipher2 = crypto.createDecipheriv(cryptoAlgorithm, key, iv);
+                let decOksigen = dataDecipher2.update(waterDataMap.oksigen, 'hex', 'utf8');
+                decOksigen += dataDecipher2.final('utf8');
+
+
+                const dataDecipher3 = crypto.createDecipheriv(cryptoAlgorithm, key, iv);
+                let decKekeruhanAir = dataDecipher3.update(waterDataMap.kekeruhanAir, 'hex', 'utf8');
+                decKekeruhanAir += dataDecipher3.final('utf8');
+
+                return {
+                    no: index + 1,
+                    id: waterDataMap.id,
+                    ketinggianAir: decKetinngianAir,
+                    oksigen: decOksigen,
+                    kekeruhanAir: decKekeruhanAir,
+                    date:
+                        waterCalender.getDate() +
+                        " - " +
+                        (waterCalender.getMonth() + 1) +
+                        " - " +
+                        waterCalender.getFullYear(),
+                    time:
+                        waterCalender.getHours() +
+                        ":" +
+                        waterCalender.getMinutes() +
+                        ":" +
+                        waterCalender.getSeconds(),
+                };
+            });
+            console.log("adojaiodjoa", dataJson.oksigen)
+
+            socket.socketConnection.socket.emit("dataCardAir", waterMap.slice(-1))
+
+            socket.socketConnection.socket.emit("dataGraphAir", waterMap.slice(-4))
+
         } catch (error) {
             console.error(`Error ${error.message}`)
         }
@@ -170,6 +215,41 @@ module.exports = {
                 celcius: dataJson.celcius ?? "30039b4d60c8126a163c1805ba1882fb",
             };
             const newData = await new Udara(payloadEnc).save()
+
+            const temperature = await Udara.find({});
+
+            const temperatureMap = temperature.map((suhuDataMap, index) => {
+                const suhuCalender = new Date(suhuDataMap.createdAt);
+                const dataDecipher1 = crypto.createDecipheriv(cryptoAlgorithm, key, iv);
+                let decCelcius = dataDecipher1.update(suhuDataMap.celcius, 'hex', 'utf8');
+                decCelcius += dataDecipher1.final('utf8');
+
+                const dataDecipher2 = crypto.createDecipheriv(cryptoAlgorithm, key, iv);
+                let decHumidty = dataDecipher2.update(suhuDataMap.humidity, 'hex', 'utf8');
+                decHumidty += dataDecipher2.final('utf8');
+
+                return {
+                    no: index + 1,
+                    id: suhuDataMap.id,
+                    celcius: decCelcius,
+                    humidity: decHumidty,
+                    date:
+                        suhuCalender.getDate() +
+                        " - " +
+                        (suhuCalender.getMonth() + 1) +
+                        " - " +
+                        suhuCalender.getFullYear(),
+                    time:
+                        suhuCalender.getHours() +
+                        ":" +
+                        suhuCalender.getMinutes() +
+                        ":" +
+                        suhuCalender.getSeconds(),
+                };
+            });
+            socket.socketConnection.socket.emit("dataCardUdara", temperatureMap.slice(-1))
+
+            socket.socketConnection.socket.emit("dataGraphUdara", temperatureMap.slice(-4))
         } catch (error) {
             console.error(`Error ${error.message}`)
         }
@@ -237,6 +317,41 @@ module.exports = {
                 phTanah: dataJson.phTanah ?? "30039b4d60c8126a163c1805ba1882fb",
             };
             const newData = await new Tanah(payloadEnc).save()
+
+            const soilData = await Tanah.find({});
+
+            const soilDataMap = soilData.map((soilDataMap, index) => {
+                const soilCalender = new Date(soilDataMap.createdAt);
+                const dataDecipher1 = crypto.createDecipheriv(cryptoAlgorithm, key, iv);
+                let decKelembapanTanah = dataDecipher1.update(soilDataMap.kelembapanTanah, 'hex', 'utf8');
+                decKelembapanTanah += dataDecipher1.final('utf8');
+
+                const dataDecipher2 = crypto.createDecipheriv(cryptoAlgorithm, key, iv);
+                let decPhTanah = dataDecipher2.update(soilDataMap.phTanah, 'hex', 'utf8');
+                decPhTanah += dataDecipher2.final('utf8');
+
+                return {
+                    no: index + 1,
+                    id: soilDataMap.id,
+                    kelembapanTanah: decKelembapanTanah ?? 0,
+                    phTanah: decPhTanah ?? 0,
+                    date:
+                        soilCalender.getDate() +
+                        " - " +
+                        (soilCalender.getMonth() + 1) +
+                        " - " +
+                        soilCalender.getFullYear(),
+                    time:
+                        soilCalender.getHours() +
+                        ":" +
+                        soilCalender.getMinutes() +
+                        ":" +
+                        soilCalender.getSeconds(),
+                };
+            });
+            socket.socketConnection.socket.emit("dataCardTanah", soilDataMap.slice(-1))
+
+            socket.socketConnection.socket.emit("dataGraphTanah", soilDataMap.slice(-4))
         } catch (error) {
             console.error(`Error ${error.message}`)
         }
@@ -246,6 +361,7 @@ module.exports = {
         try {
             const dataJson = await JSON.parse(rawData)
             const newData = await new TanahKelemEnc(dataJson).save()
+            
         } catch (error) {
             console.error(`Error ${error.message}`)
         }
