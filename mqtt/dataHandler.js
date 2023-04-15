@@ -211,8 +211,8 @@ module.exports = {
         try {
             const dataJson = await JSON.parse(rawData)
             const payloadEnc = {
-                humidity: dataJson.humidity ?? "0",
-                celcius: dataJson.celcius ?? "0",
+                humidity: dataJson.humidity,
+                celcius: dataJson.celcius,
             };
 
             console.log("aduahoda", payloadEnc)
