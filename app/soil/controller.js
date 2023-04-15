@@ -176,17 +176,17 @@ module.exports = {
     try {
       const { kelembapanTanah, phTanah } = req.body;
 
-      const dataEncrypt1 = crypto.createCipheriv(cryptoAlgorithm , key, iv);
-      let dataCipher1 = dataEncrypt1.update(kelembapanTanah, 'utf8', 'hex');
-      dataCipher1 += dataEncrypt1.final('hex');
+      // const dataEncrypt1 = crypto.createCipheriv(cryptoAlgorithm , key, iv);
+      // let dataCipher1 = dataEncrypt1.update(kelembapanTanah, 'utf8', 'hex');
+      // dataCipher1 += dataEncrypt1.final('hex');
 
-      const dataEncrypt2 = crypto.createCipheriv(cryptoAlgorithm , key, iv);
-      let dataCipher2 = dataEncrypt2.update(phTanah, 'utf8', 'hex');
-      dataCipher2 += dataEncrypt2.final('hex');
+      // const dataEncrypt2 = crypto.createCipheriv(cryptoAlgorithm , key, iv);
+      // let dataCipher2 = dataEncrypt2.update(phTanah, 'utf8', 'hex');
+      // dataCipher2 += dataEncrypt2.final('hex');
 
       const payload = {
-        kelembapanTanah: dataCipher1,
-        phTanah: dataCipher2,
+        kelembapanTanah: kelembapanTanah,
+        phTanah: phTanah,
       };
 
       const soil = new SoilEnc(payload);

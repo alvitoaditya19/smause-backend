@@ -79,9 +79,9 @@ module.exports = {
         try {
             const dataJson = await JSON.parse(rawData)
             const payloadEnc = {
-                ketinggianAir: dataJson.ketinggianAir,
-                oksigen: dataJson.oksigen,
-                kekeruhanAir: dataJson.kekeruhanAir
+                ketinggianAir: dataJson.ketinggianAir ?? "30039b4d60c8126a163c1805ba1882fb",
+                oksigen: dataJson.oksigen ?? "30039b4d60c8126a163c1805ba1882fb",
+                kekeruhanAir: dataJson.kekeruhanAir ?? "30039b4d60c8126a163c1805ba1882fb"
             };
             const newData = await new Air(payloadEnc).save()
 
@@ -151,9 +151,9 @@ module.exports = {
             // dataCipher3 += dataEncrypt3.final('hex');
 
             const payloadEnc = {
-                ketinggianAir: dataJson.ketinggianAir,
-                oksigen: dataJson.oksigen,
-                kekeruhanAir: dataJson.kekeruhanAir
+                ketinggianAir: dataJson.ketinggianAir ?? "30039b4d60c8126a163c1805ba1882fb",
+                oksigen: dataJson.oksigen ?? "30039b4d60c8126a163c1805ba1882fb",
+                kekeruhanAir: dataJson.kekeruhanAir ?? "30039b4d60c8126a163c1805ba1882fb"
             };
 
             const newData = await AirEnc(payloadEnc).save()
@@ -211,8 +211,8 @@ module.exports = {
         try {
             const dataJson = await JSON.parse(rawData)
             const payloadEnc = {
-                humidity: dataJson.humidity,
-                celcius: dataJson.celcius,
+                humidity: dataJson.humidity ?? "0",
+                celcius: dataJson.celcius ?? "0",
             };
 
             console.log("aduahoda", payloadEnc)
@@ -268,8 +268,8 @@ module.exports = {
             // let dataCipher2 = dataEncrypt2.update(dataJson.humidity, 'utf8', 'hex');
             // dataCipher2 += dataEncrypt2.final('hex');
             const payloadEnc = {
-                humidity: dataJson.humidity,
-                celcius: dataJson.celcius,
+                humidity: dataJson.humidity ?? "30039b4d60c8126a163c1805ba1882fb",
+                celcius: dataJson.celcius ?? "30039b4d60c8126a163c1805ba1882fb",
             };
             const newData = await new UdaraEnc(payloadEnc).save()
             const temperature = await UdaraEnc.find({});
@@ -315,8 +315,8 @@ module.exports = {
         try {
             const dataJson = await JSON.parse(rawData)
             const payloadEnc = {
-                kelembapanTanah: dataJson.kelembapanTanah,
-                phTanah: dataJson.phTanah,
+                kelembapanTanah: dataJson.kelembapanTanah ?? "30039b4d60c8126a163c1805ba1882fb",
+                phTanah: dataJson.phTanah ?? "30039b4d60c8126a163c1805ba1882fb",
             };
             const newData = await new Tanah(payloadEnc).save()
 
@@ -404,8 +404,8 @@ module.exports = {
             // }
             
             const payloadEnc = {
-                kelembapanTanah: dataJson.kelembapanTanah,
-                phTanah: dataJson.phTanah,
+                kelembapanTanah: dataJson.kelembapanTanah ?? "30039b4d60c8126a163c1805ba1882fb",
+                phTanah: dataJson.phTanah ?? "30039b4d60c8126a163c1805ba1882fb",
             };
 
             const newData = await new TanahEnc(payloadEnc).save()
