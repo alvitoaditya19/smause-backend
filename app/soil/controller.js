@@ -1,5 +1,6 @@
 const Soil = require("./model");
 const SoilEnc = require("./model-enc");
+const SoiKelemlEnc = require("./modelKelem-enc");
 
 const { Parser } = require("json2csv");
 const crypto = require('crypto');
@@ -21,8 +22,12 @@ module.exports = {
         page = 1;
       }
       const soilData = await SoilEnc.find({});
+      const soilKelemData = await SoiKelemlEnc.find({});
 
-      const soilDatMap = soilData.map((soilDataMap, index) => {
+      const all = [...soilData, ...soilKelemData]
+
+
+      const soilDatMap = all.map((soilDataMap, index) => {
         const soilCalender = new Date(soilDataMap.createdAt);
         return {
           no: index + 1,
@@ -43,15 +48,63 @@ module.exports = {
             soilCalender.getSeconds(),
         };
       });
+
+      const soilDatMapPart1 = soilData.map((soilDataMap, index) => {
+        const soilCalender = new Date(soilDataMap.createdAt);
+        return {
+          no: index + 1,
+          id: soilDataMap.id,
+          phTanah: soilDataMap.phTanah,
+          date:
+            soilCalender.getDate() +
+            " - " +
+            (soilCalender.getMonth() + 1) +
+            " - " +
+            soilCalender.getFullYear(),
+          time:
+            soilCalender.getHours() +
+            ":" +
+            soilCalender.getMinutes() +
+            ":" +
+            soilCalender.getSeconds(),
+        };
+      });
+
+      const soilDatMapPart2 = soilKelemData.map((soilDataMap, index) => {
+        const soilCalender = new Date(soilDataMap.createdAt);
+        return {
+          no: index + 1,
+          id: soilDataMap.id,
+          kelembapanTanah: soilDataMap.kelembapanTanah,
+          date:
+            soilCalender.getDate() +
+            " - " +
+            (soilCalender.getMonth() + 1) +
+            " - " +
+            soilCalender.getFullYear(),
+          time:
+            soilCalender.getHours() +
+            ":" +
+            soilCalender.getMinutes() +
+            ":" +
+            soilCalender.getSeconds(),
+        };
+      });
       const totalSoil = soilDatMap.length;
 
       const startIndex = (page - 1) * limit;
       const endIndex = page * limit;
       const result = soilDatMap.slice(startIndex, endIndex);
 
+      const resultMapPArt1 = soilDatMapPart1.slice(startIndex, endIndex);
+      const resultMapPArt2 = soilDatMapPart2.slice(startIndex, endIndex);
+
+
       res.status(201).json({
         total: totalSoil,
         data: result,
+        dataSoil: resultMapPArt1,
+        dataSoilKelem: resultMapPArt2,
       });
     } catch (err) {
       res.status(500).json({
@@ -59,6 +112,55 @@ module.exports = {
       });
     }
   },
+  // getDataSoilEnc: async (req, res, next) => {
+  //   try {
+  //     let { limit = "" } = req.query;
+  //     let { page = "" } = req.query;
+  //     if (!limit) {
+  //       limit = Infinity;
+  //     }
+  //     if (!page) {
+  //       page = 1;
+  //     }
+  //     const soilData = await SoilEnc.find({});
+
+  //     const soilDatMap = soilData.map((soilDataMap, index) => {
+  //       const soilCalender = new Date(soilDataMap.createdAt);
+  //       return {
+  //         no: index + 1,
+  //         id: soilDataMap.id,
+  //         kelembapanTanah: soilDataMap.kelembapanTanah,
+  //         phTanah: soilDataMap.phTanah,
+  //         date:
+  //           soilCalender.getDate() +
+  //           " - " +
+  //           (soilCalender.getMonth() + 1) +
+  //           " - " +
+  //           soilCalender.getFullYear(),
+  //         time:
+  //           soilCalender.getHours() +
+  //           ":" +
+  //           soilCalender.getMinutes() +
+  //           ":" +
+  //           soilCalender.getSeconds(),
+  //       };
+  //     });
+  //     const totalSoil = soilDatMap.length;
+
+  //     const startIndex = (page - 1) * limit;
+  //     const endIndex = page * limit;
+  //     const result = soilDatMap.slice(startIndex, endIndex);
+
+  //     res.status(201).json({
+  //       total: totalSoil,
+  //       data: result,
+  //     });
+  //   } catch (err) {
+  //     res.status(500).json({
+  //       message: err.message || `Internal Server Error`,
+  //     });
+  //   }
+  // },
   getDataSoilReal: async (req, res, next) => {
     try {
       let { limit = "" } = req.query;

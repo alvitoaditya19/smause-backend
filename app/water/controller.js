@@ -72,7 +72,7 @@ module.exports = {
             waterCalender.getSeconds(),
         };
       });
-      
+
       socket.socketConnection.socket.emit("message", "hello")
 
       socket.socketConnection.socket.emit("data", waterMap)
@@ -82,9 +82,9 @@ module.exports = {
       res.status(201).json({
         data: "success",
         dataSocket,
-        dataReal: waterReal, 
+        dataReal: waterReal,
         dataEncrypt: waterEnc,
-        getData:water
+        getData: water
 
       });
     } catch (err) {
@@ -170,7 +170,7 @@ module.exports = {
         let decOksigen = dataDecipher2.update(waterDataMap.oksigen, 'hex', 'utf8');
         decOksigen += dataDecipher2.final('utf8');
 
-        
+
         const dataDecipher3 = crypto.createDecipheriv(cryptoAlgorithm, key, iv);
         let decKekeruhanAir = dataDecipher3.update(waterDataMap.kekeruhanAir, 'hex', 'utf8');
         decKekeruhanAir += dataDecipher3.final('utf8');
@@ -218,7 +218,7 @@ module.exports = {
       const payload = {
         ketinggianAir: ketinggianAir,
         oksigen: oksigen,
-        kekeruhanAir:kekeruhanAir
+        kekeruhanAir: kekeruhanAir
       };
 
       const water = new Water(payload);
@@ -277,8 +277,29 @@ module.exports = {
       const payload = {
         ketinggianAir: ketinggianAir,
         oksigen: oksigen,
-        kekeruhanAir:kekeruhanAir
+        kekeruhanAir: kekeruhanAir
       };
+
+      // contoh pesan yang akan diperiksa
+      const message1 = payload.ketinggianAir;
+      const message2 = payload.kekeruhanAir;
+      const message3 = payload.oksigen;
+
+
+      // panjang kunci AES-128 dalam bit (128 bit = 16 byte)
+      const aes128KeyLength = 128;
+
+      // konversi pesan ke bentuk byte array
+      const messageBytes1 = new TextEncoder().encode(message1);
+      const messageBytes2 = new TextEncoder().encode(message2);
+      const messageBytes3 = new TextEncoder().encode(message3);
+
+
+      // cek apakah panjang pesan merupakan kelipatan dari 16 byte
+      if (messageBytes1.length % 16 !== 0 || messageBytes2.length % 16 !== 0 || messageBytes3.length % 16 !== 0) {
+        // cek apakah panjang kunci yang digunakan adalah 128 bit
+        throw new Error(JSON.stringify('Pesan tidak dienkripsi dengan AES-128'));
+      }
 
       const water = new WaterEnc(payload);
       await water.save();
