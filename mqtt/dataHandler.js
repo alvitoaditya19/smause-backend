@@ -6,6 +6,8 @@ const Udara = require("../app/temperature/model");
 const AirEnc = require("../app/water/model-enc");
 const TanahEnc = require("../app/soil/model-enc");
 const TanahKelemEnc = require("../app/soil/modelKelem-enc");
+const TanahKelem = require("../app/soil/modelKelem");
+
 
 const Message = require("../app/message/model");
 
@@ -393,7 +395,7 @@ module.exports = {
         const rawData = payload.toString()
         try {
             const dataJson = await JSON.parse(rawData)
-            const newData = await new TanahKelemEnc(dataJson).save()
+            const newData = await new TanahKelem(dataJson).save()
 
         } catch (error) {
             console.error(`Error ${error.message}`)

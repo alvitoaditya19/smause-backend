@@ -72,75 +72,89 @@ app.use(`${URL}/controls`, controlsRouter);
 app.use(`${URL}/settings`, settingsRouter);
 app.use(`${URL}/temperatures`, temperaturesRouter);
 
-// app.get(`${URL}/testing`, async (req, res) => {
-//   try {
-//     // contoh pesan yang akan diperiksa
-//     const message = '86da7c0603e94d1eb38e7cf8be02189f';
+app.post(`${URL}/testing`, async (req, res) => {
+  try {
+    // contoh pesan yang akan diperiksa
+    // const message = '86da7c0603e94d1eb38e7cf8be02189f';
 
-//     // panjang kunci AES-128 dalam bit (128 bit = 16 byte)
-//     const aes128KeyLength = 128;
+    // // panjang kunci AES-128 dalam bit (128 bit = 16 byte)
+    // const aes128KeyLength = 128;
 
-//     // konversi pesan ke bentuk byte array
-//     const messageBytes = new TextEncoder().encode(message);
+    // // konversi pesan ke bentuk byte array
+    // const messageBytes = new TextEncoder().encode(message);
 
-//     // cek apakah panjang pesan merupakan kelipatan dari 16 byte
-//     if (messageBytes.length % 16 === 0) {
-//       // cek apakah panjang kunci yang digunakan adalah 128 bit
-//       if (aesKey.byteLength * 8 === aes128KeyLength) {
-//         // console.log('Pesan telah dienkripsi dengan AES-128');
-//         res.json({ message: "Pesan telah dienkripsi dengan AES-128" });
+    // // cek apakah panjang pesan merupakan kelipatan dari 16 byte
+    // if (messageBytes.length % 16 === 0) {
+    //   // cek apakah panjang kunci yang digunakan adalah 128 bit
+    //   if (aesKey.byteLength * 8 === aes128KeyLength) {
+    //     // console.log('Pesan telah dienkripsi dengan AES-128');
+    //     res.json({ message: "Pesan telah dienkripsi dengan AES-128" });
 
-//       } else {
-//         // console.log('Pesan tidak dienkripsi dengan AES-128');
-//         res.json({ message: "Pesan tidak dienkripsi dengan AES-128" });
+    //   } else {
+    //     // console.log('Pesan tidak dienkripsi dengan AES-128');
+    //     res.json({ message: "Pesan tidak dienkripsi dengan AES-128" });
 
-//       }
-//     } else {
-//       res.json({ message: "Pesan tidak dienkripsi dengan AES-128" });
+    //   }
+    // } else {
+    //   res.json({ message: "Pesan tidak dienkripsi dengan AES-128" });
 
-//       // console.log('Pesan tidak dienkripsi dengan AES-128');
-//     }
-//     // await TanahModel.deleteMany({
-//     //   'kelembapanTanah': null,
-//     //   'phTanah': null,
-//     // },
+    //   // console.log('Pesan tidak dienkripsi dengan AES-128');
+    // }
+    // await TanahModel.deleteMany({
+    //   'kelembapanTanah': null,
+    //   'phTanah': null,
+    // },
 
-//     //   await TanahKelemModel.deleteMany({ "kelembapanTanah": { $exists: true, $expr: { $eq: [ { $strLenCP: "$kelembapanTanah" }, 4 ] } } }
-//     // ) 
-//     // && await TanahModel.deleteMany({
-//     //   'phTanah': null,
+    //   await TanahKelemModel.deleteMany({ "kelembapanTanah": { $exists: true, $expr: { $eq: [ { $strLenCP: "$kelembapanTanah" }, 4 ] } } }
+    // ) 
+    // && await TanahModel.deleteMany({
+    //   'phTanah': null,
 
-//     // },
+    // },
 
-//     //   await AirModel.deleteMany({
-//     //     'oksigen': null,
-//     //     // 'kekeruhanAir': null,
-//     //     // 'ketinggianAir': null,
-//     //   },
-//     // ) 
+      await AirModel.deleteMany({
+        // 'oksigen': null,
+        'kekeruhanAir': null,
+        // 'ketinggianAir': null,
+      },
+    ) 
 
-//     // && await TanahModel.deleteMany({
-//     //   'kelembapanTanah': null,
-//     // },
+    await TanahModel.deleteMany({
+      // 'oksigen': null,
+      // 'kekeruhanAir': null,
+      'kelembapanTanah':true
+    },
+  ) 
 
-//     //   await AirModel.deleteMany({
-//     //     // 'oksigen': null,
-//     //     'kekeruhanAir': null,
-//     //     // 'ketinggianAir': null,
-//     //   },
-//     // );
-//     // res.json({ message: "Successfully" });
-//   } catch (err) {
-//     if (err && err.name === "ValidationError") {
-//       return res.status(422).json({
-//         error: 1,
-//         message: err.message,
-//         fields: err.errors,
-//       });
-//     }
-//     next(err);
-//   }
-// });
+    await AirModel.deleteMany({
+      'oksigen': null,
+      'kekeruhanAir': null,
+      // 'ketinggianAir': null,
+    },
+  ) 
+
+    // && await TanahModel.deleteMany({
+    //   'kelembapanTanah': null,
+    // },
+
+    //   await AirModel.deleteMany({
+    //     // 'oksigen': null,
+    //     'kekeruhanAir': null,
+    //     // 'ketinggianAir': null,
+    //   },
+    // );
+    res.json({ message: "Successfully" });
+  } catch (err) {
+    if (err && err.name === "ValidationError") {
+      return res.status(422).json({
+        error: 1,
+        message: err.message,
+        fields: err.errors,
+      });
+    }
+    next(err);
+  }
+});
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
