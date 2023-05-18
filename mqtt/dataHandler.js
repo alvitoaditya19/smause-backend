@@ -6,6 +6,8 @@ const Udara = require("../app/temperature/model");
 const AirEnc = require("../app/water/model-enc");
 const TanahEnc = require("../app/soil/model-enc");
 const TanahKelemEnc = require("../app/soil/modelKelem-enc");
+const TanahKelem = require("../app/soil/modelKelem");
+
 
 const Message = require("../app/message/model");
 
@@ -79,9 +81,9 @@ module.exports = {
         try {
             const dataJson = await JSON.parse(rawData)
             const payloadEnc = {
-                ketinggianAir: dataJson.ketinggianAir ?? "30039b4d60c8126a163c1805ba1882fb",
-                oksigen: dataJson.oksigen ?? "30039b4d60c8126a163c1805ba1882fb",
-                kekeruhanAir: dataJson.kekeruhanAir ?? "30039b4d60c8126a163c1805ba1882fb"
+                ketinggianAir: dataJson.ketinggianAir ?? "0",
+                oksigen: dataJson.oksigen ?? "0",
+                kekeruhanAir: dataJson.kekeruhanAir ?? "0"
             };
             const newData = await new Air(payloadEnc).save()
 
@@ -156,6 +158,25 @@ module.exports = {
                 kekeruhanAir: dataJson.kekeruhanAir ?? "30039b4d60c8126a163c1805ba1882fb"
             };
 
+            // contoh pesan yang akan diperiksa
+            const message1 = payloadEnc.ketinggianAir;
+            const message2 = payloadEnc.kekeruhanAir;
+            const message3 = payloadEnc.oksigen;
+
+
+            // konversi pesan ke bentuk byte array
+            const messageBytes1 = new TextEncoder().encode(message1);
+            const messageBytes2 = new TextEncoder().encode(message2);
+            const messageBytes3 = new TextEncoder().encode(message3);
+
+
+            // cek apakah panjang pesan merupakan kelipatan dari 16 byte
+            if (messageBytes1.length % 16 !== 0 || messageBytes2.length % 16 !== 0 || messageBytes3.length % 16 !== 0) {
+                // cek apakah panjang kunci yang digunakan adalah 128 bit
+                throw new Error(JSON.stringify('Pesan tidak dienkripsi dengan AES-128'));
+            }
+
+
             const newData = await AirEnc(payloadEnc).save()
 
             const water = await AirEnc.find({});
@@ -196,8 +217,6 @@ module.exports = {
                         waterCalender.getSeconds(),
                 };
             });
-            console.log("adojaiodjoa", dataJson.oksigen)
-
             socket.socketConnection.socket.emit("dataCardAir", waterMap.slice(-1))
 
             socket.socketConnection.socket.emit("dataGraphAir", waterMap.slice(-4))
@@ -215,7 +234,6 @@ module.exports = {
                 celcius: dataJson.celcius ?? "0",
             };
 
-            console.log("aduahoda", payloadEnc)
             const newData = await new Udara(payloadEnc).save()
 
             const temperature = await Udara.find({});
@@ -271,6 +289,21 @@ module.exports = {
                 humidity: dataJson.humidity ?? "30039b4d60c8126a163c1805ba1882fb",
                 celcius: dataJson.celcius ?? "30039b4d60c8126a163c1805ba1882fb",
             };
+
+            // contoh pesan yang akan diperiksa
+            const message1 = payloadEnc.humidity;
+            const message2 = payloadEnc.celcius;
+
+            // konversi pesan ke bentuk byte array
+            const messageBytes1 = new TextEncoder().encode(message1);
+            const messageBytes2 = new TextEncoder().encode(message2);
+
+
+            // cek apakah panjang pesan merupakan kelipatan dari 16 byte
+            if (messageBytes1.length % 16 !== 0 || messageBytes2.length % 16 !== 0) {
+                // cek apakah panjang kunci yang digunakan adalah 128 bit
+                throw new Error(JSON.stringify('Pesan tidak dienkripsi dengan AES-128'));
+            }
             const newData = await new UdaraEnc(payloadEnc).save()
             const temperature = await UdaraEnc.find({});
 
@@ -315,8 +348,8 @@ module.exports = {
         try {
             const dataJson = await JSON.parse(rawData)
             const payloadEnc = {
-                kelembapanTanah: dataJson.kelembapanTanah ?? "30039b4d60c8126a163c1805ba1882fb",
-                phTanah: dataJson.phTanah ?? "30039b4d60c8126a163c1805ba1882fb",
+                kelembapanTanah: dataJson.kelembapanTanah ?? "0",
+                phTanah: dataJson.phTanah ?? "0",
             };
             const newData = await new Tanah(payloadEnc).save()
 
@@ -362,8 +395,8 @@ module.exports = {
         const rawData = payload.toString()
         try {
             const dataJson = await JSON.parse(rawData)
-            const newData = await new TanahKelemEnc(dataJson).save()
-            
+            const newData = await new TanahKelem(dataJson).save()
+
         } catch (error) {
             console.error(`Error ${error.message}`)
         }
@@ -402,20 +435,33 @@ module.exports = {
             // } else {
             //     const newData = await new TanahEnc(dataJson).save()
             // }
-            
+
             const payloadEnc = {
-                kelembapanTanah: dataJson.kelembapanTanah ?? "30039b4d60c8126a163c1805ba1882fb",
+                // kelembapanTanah: dataJson.kelembapanTanah ?? "30039b4d60c8126a163c1805ba1882fb",
                 phTanah: dataJson.phTanah ?? "30039b4d60c8126a163c1805ba1882fb",
             };
+            // contoh pesan yang akan diperiksa
+            // const message1 = payloadEnc.kelembapanTanah;
+            const message2 = payloadEnc.phTanah;
 
+            // konversi pesan ke bentuk byte array
+            // const messageBytes1 = new TextEncoder().encode(message1);
+            const messageBytes2 = new TextEncoder().encode(message2);
+
+
+            // cek apakah panjang pesan merupakan kelipatan dari 16 byte
+            if (messageBytes2.length % 16 !== 0) {
+                // cek apakah panjang kunci yang digunakan adalah 128 bit
+                throw new Error(JSON.stringify('Pesan tidak dienkripsi dengan AES-128'));
+            }
             const newData = await new TanahEnc(payloadEnc).save()
             const soilData = await TanahEnc.find({});
 
             const soilDataMap = soilData.map((soilDataMap, index) => {
-                const soilCalender = new Date(soilDataMap.createdAt);
-                const dataDecipher1 = crypto.createDecipheriv(cryptoAlgorithm, key, iv);
-                let decKelembapanTanah = dataDecipher1.update(soilDataMap.kelembapanTanah, 'hex', 'utf8');
-                decKelembapanTanah += dataDecipher1.final('utf8');
+                // const soilCalender = new Date(soilDataMap.createdAt);
+                // const dataDecipher1 = crypto.createDecipheriv(cryptoAlgorithm, key, iv);
+                // let decKelembapanTanah = dataDecipher1.update(soilDataMap.kelembapanTanah, 'hex', 'utf8');
+                // decKelembapanTanah += dataDecipher1.final('utf8');
 
                 const dataDecipher2 = crypto.createDecipheriv(cryptoAlgorithm, key, iv);
                 let decPhTanah = dataDecipher2.update(soilDataMap.phTanah, 'hex', 'utf8');
@@ -424,7 +470,7 @@ module.exports = {
                 return {
                     no: index + 1,
                     id: soilDataMap.id,
-                    kelembapanTanah: decKelembapanTanah,
+                    // kelembapanTanah: decKelembapanTanah,
                     phTanah: decPhTanah,
                     date:
                         soilCalender.getDate() +
@@ -467,6 +513,21 @@ module.exports = {
             //     phTanah: dataCipher2,
             // };
 
+            // contoh pesan yang akan diperiksa
+            const message1 = dataJson.kelembapanTanah;
+            //   const message2 = payloadEnc.celcius;
+
+            // konversi pesan ke bentuk byte array
+            const messageBytes1 = new TextEncoder().encode(message1);
+            //   const messageBytes2 = new TextEncoder().encode(message2);
+
+
+            // cek apakah panjang pesan merupakan kelipatan dari 16 byte
+            if (messageBytes1.length % 16 !== 0) {
+                // cek apakah panjang kunci yang digunakan adalah 128 bit
+                throw new Error(JSON.stringify('Pesan tidak dienkripsi dengan AES-128'));
+            }
+
             const newData = await new TanahKelemEnc(dataJson).save()
 
             const soilData = await TanahKelemEnc.find({});
@@ -501,7 +562,7 @@ module.exports = {
                         soilCalender.getSeconds(),
                 };
             });
-            socket.socketConnection.socket.emit("dataCardTanahKelem", soilData)
+            socket.socketConnection.socket.emit("dataCardTanahKelem", soilDataMap.slice(-1))
 
             socket.socketConnection.socket.emit("dataGraphTanahKelem", soilDataMap.slice(-4))
 
