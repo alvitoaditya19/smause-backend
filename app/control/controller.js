@@ -6,7 +6,7 @@ module.exports = {
   actionStatusControl: async (req, res) => {
     try {
       const { lamp1, lamp2, pump1, pump2, valve, blend, statusControl } = req.body;
-      const host = 'tos.kirei.co.id';
+      const host = 'test.mosquitto.org';
       const clientId = `mqtt_${Math.random().toString(16).slice(3)}`;
       const connectUrl = `mqtt://${host}}`;
       const topicControl = 'intern-KIREI/IOT/Control';

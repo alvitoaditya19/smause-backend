@@ -2,7 +2,7 @@ const mqtt = require("mqtt");
 const { storeData, storeDataUdara, storeDataTanah, storeDataAir, storeDataAirEnc, storeDataUdaraEnc, storeDataTanahEnc, GetDataControl, StoreDataControl, storeDataKelembapanTanah, storeDataKelembapatanTanahEnc, storeDataMessage } = require("./dataHandler");
 
 
-const host = 'tos.kirei.co.id';
+const host = 'test.mosquitto.org';
 const clientId = `mqtt_${Math.random().toString(16).slice(3)}`;
 const connectUrl = `mqtt://${host}}`;
 
