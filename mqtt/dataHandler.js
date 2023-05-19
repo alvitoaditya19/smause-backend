@@ -405,6 +405,7 @@ module.exports = {
         const rawData = payload.toString()
         try {
             const dataJson = await JSON.parse(rawData)
+            
             // const dataEncrypt1 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
             // let dataCipher1 = dataEncrypt1.update(dataJson.kelembapanTanah, 'utf8', 'hex');
             // dataCipher1 += dataEncrypt1.final('hex');
@@ -458,7 +459,8 @@ module.exports = {
             const soilData = await TanahEnc.find({});
 
             const soilDataMap = soilData.map((soilDataMap, index) => {
-                // const soilCalender = new Date(soilDataMap.createdAt);
+                const soilCalender = new Date(soilDataMap.createdAt);
+                
                 // const dataDecipher1 = crypto.createDecipheriv(cryptoAlgorithm, key, iv);
                 // let decKelembapanTanah = dataDecipher1.update(soilDataMap.kelembapanTanah, 'hex', 'utf8');
                 // decKelembapanTanah += dataDecipher1.final('utf8');
