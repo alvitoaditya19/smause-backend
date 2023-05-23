@@ -12,6 +12,8 @@ const iv = '4567123212343219'; //16 karakter
 module.exports = {
   getDataTempEnc: async (req, res, next) => {
     try {
+      const { id } = req.params;
+
       let { limit = "" } = req.query;
       let { page = "" } = req.query;
       if (!limit) {
@@ -20,7 +22,7 @@ module.exports = {
       if (!page) {
         page = 1;
       }
-      const temperature = await TemperatureEnc.find({});
+      const temperature = await TemperatureEnc.find({userId:id});
 
       const timeTemp = temperature.map((suhuDataMap, index) => {
         const suhuCalender = new Date(suhuDataMap.createdAt);

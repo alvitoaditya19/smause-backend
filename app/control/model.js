@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 
 const controlSchema = mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
   lamp1: {
     type: String,
     enum: {

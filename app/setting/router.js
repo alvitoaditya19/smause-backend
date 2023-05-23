@@ -10,11 +10,11 @@ const os = require("os");
 router.get("/up", actionUp);
 
 router.post("/create", isLoginAdmin, actionCreate);
-router.get("/",isLoginAdmin, getDataSetting);
+router.get("/:userId",isLoginAdmin, getDataSetting);
 
-router.get("/:id",isLoginAdmin, getDetailSetting);
+router.get("/:userId/:id",isLoginAdmin, getDetailSetting);
 
-router.put("/edit/:id",isLoginAdmin, actionEdit);
+router.put("/edit/:userId/:id",isLoginAdmin, actionEdit);
 router.delete("/delete/:id", isLoginAdmin, actionDelete);
 
 // router.put("/put", updateSuhu);

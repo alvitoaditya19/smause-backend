@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 
 let soilSchema = mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
   // kelembapanTanah: {
   //   type: String,
   //   require: [true, "Kelembapan Tanah Harus Diisi"],

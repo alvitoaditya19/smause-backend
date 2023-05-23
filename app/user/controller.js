@@ -1,4 +1,6 @@
 const User = require("./model");
+const Control = require("../control/model");
+
 const path = require("path");
 const fs = require("fs");
 const config = require("../../config");
@@ -83,6 +85,21 @@ module.exports = {
 
             await user.save();
 
+            const payloadControl = {
+
+              statusControl: "OFF",
+
+              lamp1: "OFF",
+              lamp2: "OFF",
+              pump1: "OFF",
+              pump2: "OFF",
+              blend: "OFF",
+              valve: "OFF",
+              status: "OFF",
+              userId: user._id
+
+            }
+            await new Control(payloadControl).save()
             delete user._doc.password;
 
             res.status(201).json({ data: user });
@@ -101,6 +118,19 @@ module.exports = {
         let user = new User(payload);
 
         await user.save();
+        const payloadControl = {
+          statusControl: "OFF",
+          lamp1: "OFF",
+          lamp2: "OFF",
+          pump1: "OFF",
+          pump2: "OFF",
+          blend: "OFF",
+          valve: "OFF",
+          status: "OFF",
+          userId: user._id
+
+        }
+        await new Control(payloadControl).save()
 
         delete user._doc.password;
 
@@ -208,10 +238,15 @@ module.exports = {
   actionDelete: async (req, res) => {
     try {
       const { id } = req.params;
+      await Control.findOneAndRemove({
+        userId: id,
+      });
       const user = await User.findOneAndRemove({
         _id: id,
       });
-      if(user.avatar !== ""){
+
+
+      if (user.avatar !== "") {
         let currentImage = `${config.rootPath}/public/uploads/${user.avatar}`;
         if (fs.existsSync(currentImage)) {
           fs.unlinkSync(currentImage)
@@ -344,7 +379,7 @@ module.exports = {
   },
   editProfile: async (req, res, next) => {
     try {
-      const { name = "", username = "", password="" } = req.body
+      const { name = "", username = "", password = "" } = req.body
 
       const payload = {}
 
@@ -367,13 +402,13 @@ module.exports = {
         src.on('end', async () => {
           let user = await User.findOne({ _id: req.user._id })
 
-          if(user.avatar !== ""){
+          if (user.avatar !== "") {
             let currentImage = `${config.rootPath}/public/uploads/${user.avatar}`;
             if (fs.existsSync(currentImage)) {
               fs.unlinkSync(currentImage)
             }
           }
- 
+
 
           user = await User.findOneAndUpdate({
             _id: req.user._id
@@ -423,5 +458,5 @@ module.exports = {
         })
       }
     }
-  } 
+  }
 };

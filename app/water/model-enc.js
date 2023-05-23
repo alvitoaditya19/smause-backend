@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 
 let waterSchema = mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
   ketinggianAir: {
     type: String,
     require: [true, "ketinggianAir Harus Diisi"],

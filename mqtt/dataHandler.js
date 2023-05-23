@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Control = require("../app/control/model");
 const Air = require("../app/water/model");
 const Tanah = require("../app/soil/model");
@@ -151,8 +152,11 @@ module.exports = {
             // const dataEncrypt3 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
             // let dataCipher3 = dataEncrypt3.update(dataJson.kekeruhanAir, 'utf8', 'hex');
             // dataCipher3 += dataEncrypt3.final('hex');
+            const stringId = dataJson.userId;
+            const objectId = mongoose.Types.ObjectId(stringId);
 
             const payloadEnc = {
+                userId:objectId,
                 ketinggianAir: dataJson.ketinggianAir ?? "30039b4d60c8126a163c1805ba1882fb",
                 oksigen: dataJson.oksigen ?? "30039b4d60c8126a163c1805ba1882fb",
                 kekeruhanAir: dataJson.kekeruhanAir ?? "30039b4d60c8126a163c1805ba1882fb"
@@ -179,7 +183,7 @@ module.exports = {
 
             const newData = await AirEnc(payloadEnc).save()
 
-            const water = await AirEnc.find({});
+            const water = await AirEnc.find({userId:objectId});
 
             const waterMap = water.map((waterDataMap, index) => {
                 const waterCalender = new Date(waterDataMap.createdAt);
@@ -285,7 +289,11 @@ module.exports = {
             // const dataEncrypt2 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
             // let dataCipher2 = dataEncrypt2.update(dataJson.humidity, 'utf8', 'hex');
             // dataCipher2 += dataEncrypt2.final('hex');
+            const stringId = dataJson.userId;
+            const objectId = mongoose.Types.ObjectId(stringId);
+
             const payloadEnc = {
+                userId:objectId,
                 humidity: dataJson.humidity ?? "30039b4d60c8126a163c1805ba1882fb",
                 celcius: dataJson.celcius ?? "30039b4d60c8126a163c1805ba1882fb",
             };
@@ -305,7 +313,7 @@ module.exports = {
                 throw new Error(JSON.stringify('Pesan tidak dienkripsi dengan AES-128'));
             }
             const newData = await new UdaraEnc(payloadEnc).save()
-            const temperature = await UdaraEnc.find({});
+            const temperature = await UdaraEnc.find({userId:objectId});
 
             const temperatureMap = temperature.map((suhuDataMap, index) => {
                 const suhuCalender = new Date(suhuDataMap.createdAt);
@@ -436,8 +444,12 @@ module.exports = {
             // } else {
             //     const newData = await new TanahEnc(dataJson).save()
             // }
+            const stringId = dataJson.userId;
+            const objectId = mongoose.Types.ObjectId(stringId);
 
             const payloadEnc = {
+                userId:objectId,
+
                 // kelembapanTanah: dataJson.kelembapanTanah ?? "30039b4d60c8126a163c1805ba1882fb",
                 phTanah: dataJson.phTanah ?? "30039b4d60c8126a163c1805ba1882fb",
             };
@@ -456,7 +468,7 @@ module.exports = {
                 throw new Error(JSON.stringify('Pesan tidak dienkripsi dengan AES-128'));
             }
             const newData = await new TanahEnc(payloadEnc).save()
-            const soilData = await TanahEnc.find({});
+            const soilData = await TanahEnc.find({userId:objectId});
 
             const soilDataMap = soilData.map((soilDataMap, index) => {
                 const soilCalender = new Date(soilDataMap.createdAt);
@@ -509,14 +521,18 @@ module.exports = {
             // const dataEncrypt2 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
             // let dataCipher2 = dataEncrypt2.update(dataJson.phTanah, 'utf8', 'hex');
             // dataCipher2 += dataEncrypt2.final('hex');
+            const stringId = dataJson.userId;
+            const objectId = mongoose.Types.ObjectId(stringId);
 
-            // const payloadEnc = {
-            //     kelembapanTanah: dataCipher1,
-            //     phTanah: dataCipher2,
-            // };
+            const payloadEnc = {
+                userId:objectId,
+
+                kelembapanTanah: dataJson.kelembapanTanah ?? "30039b4d60c8126a163c1805ba1882fb",
+                // phTanah: dataCipher2,
+            };
 
             // contoh pesan yang akan diperiksa
-            const message1 = dataJson.kelembapanTanah;
+            const message1 = payloadEnc.kelembapanTanah;
             //   const message2 = payloadEnc.celcius;
 
             // konversi pesan ke bentuk byte array
@@ -530,9 +546,9 @@ module.exports = {
                 throw new Error(JSON.stringify('Pesan tidak dienkripsi dengan AES-128'));
             }
 
-            const newData = await new TanahKelemEnc(dataJson).save()
+            const newData = await new TanahKelemEnc(payloadEnc).save()
 
-            const soilData = await TanahKelemEnc.find({});
+            const soilData = await TanahKelemEnc.find({userId:objectId});
 
             const soilDataMap = soilData.map((soilDataMap, index) => {
                 const soilCalender = new Date(soilDataMap.createdAt);

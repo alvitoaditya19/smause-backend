@@ -10,7 +10,7 @@ router.post("/encrypt",isLoginAdmin, postWaterEnc);
 router.post("/real",isLoginAdmin, postWaterReal);
 
 
-router.get("/encrypt",isLoginAdmin, getDataWaterEnc);
+router.get("/encrypt/:id",isLoginAdmin, getDataWaterEnc);
 router.get("/real",isLoginAdmin, getDataWaterReal);
 
 // Testing

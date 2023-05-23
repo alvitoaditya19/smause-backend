@@ -4,7 +4,10 @@ const mqtt = require('mqtt')
 
 module.exports = {
   actionStatusControl: async (req, res) => {
+
     try {
+      const { id } = req.params;
+
       const { lamp1, lamp2, pump1, pump2, valve, blend, statusControl } = req.body;
       const host = 'test.mosquitto.org';
       const clientId = `mqtt_${Math.random().toString(16).slice(3)}`;
@@ -12,9 +15,10 @@ module.exports = {
       const topicControl = 'intern-KIREI/IOT/Control';
 
       const controlData = await Control.findOneAndUpdate(
-        {
-          _id: "63d1decc37a463ae302eeba3",
-        },
+        {userId:id},
+        // {
+        //   _id: "63d1decc37a463ae302eeba3",
+        // },
         {
           lamp1,
           lamp2,
@@ -69,9 +73,11 @@ module.exports = {
     }
   },
   getStatusControl: async (req, res) => {
+    const { id } = req.params;
+
     try {
 
-      const control = await Control.findOne({});
+      const control = await Control.findOne({userId:id});
       res.status(200).json({ data: control });
 
     } catch (err) {

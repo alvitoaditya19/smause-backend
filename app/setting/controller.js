@@ -18,6 +18,7 @@ module.exports = {
   },
   actionCreate: async (req, res, next) => {
     try {
+
       const payload = req.body;
 
       let setting = new Settings(payload);
@@ -40,12 +41,12 @@ module.exports = {
   },
   actionEdit: async (req, res) => {
     try {
-      const { id } = req.params;
+      const { userId,id } = req.params;
       const { nameVegetable, amountVegetable, amountHarvest } = req.body;
 
       const settingData = await Settings.findOneAndUpdate(
         {
-          _id: id,
+          userId,_id: id,
         },
         {
           nameVegetable,
@@ -91,6 +92,8 @@ module.exports = {
   },
   getDataSetting: async (req, res) => {
     try {
+      const { userId } = req.params;
+
       let { limit = "" } = req.query;
       let { page = "" } = req.query;
       let { status = "" } = req.query;
@@ -111,7 +114,7 @@ module.exports = {
         };
       }
 
-      let settingData = await Settings.find().select('nameVegetable amountVegetable amountHarvest');
+      let settingData = await Settings.find({userId:userId}).select('nameVegetable amountVegetable amountHarvest');
 
       let settingAllData = settingData.map((item, index) => {
         return {
@@ -151,9 +154,9 @@ module.exports = {
   },
   getDetailSetting: async (req, res) => {
     try {
-      const { id } = req.params;
+      const { userId,id } = req.params;
 
-      const user = await Settings.findOne({ _id: id });
+      const user = await Settings.findOne({ userId,_id: id });
 
       if (!user) return res.status(404).json({ message: 'Sayuran tidak ditemukan' })
 

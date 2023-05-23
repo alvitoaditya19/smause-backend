@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 
 let settingSchema = mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
   nameVegetable: {
     type: String,
     require: [true, "Vegetable Harus Diisi"],

@@ -96,6 +96,8 @@ module.exports = {
   },
   getDataWaterEnc: async (req, res, next) => {
     try {
+      const { id } = req.params;
+
       let { limit = "" } = req.query;
       let { page = "" } = req.query;
       if (!limit) {
@@ -104,7 +106,9 @@ module.exports = {
       if (!page) {
         page = 1;
       }
-      const water = await WaterEnc.find({});
+      // const user = await User.findOne({ _id: id });
+
+      const water = await WaterEnc.find({userId:id});
 
       const waterMap = water.map((waterDataMap, index) => {
         const waterCalender = new Date(waterDataMap.createdAt);

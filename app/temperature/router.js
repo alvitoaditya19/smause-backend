@@ -8,7 +8,7 @@ const os = require("os");
 // API
 router.post("/", isLoginAdmin,postTemp);
 
-router.get("/encrypt",isLoginAdmin, getDataTempEnc);
+router.get("/encrypt/:id",isLoginAdmin, getDataTempEnc);
 router.get("/real",isLoginAdmin, getDataTempReal);
 
 router.post("/encrypt",isLoginAdmin, postTempEnc);

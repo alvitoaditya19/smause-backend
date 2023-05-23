@@ -7,8 +7,8 @@ const { isLoginAdmin,isLoginUser } = require("../middleware/auth");
 const os = require("os");
 const { actionStatusControl, getStatusControl } = require("./controller");
 
-router.get("/",isLoginAdmin, getStatusControl);
-router.put("/",isLoginAdmin, actionStatusControl);
+router.get("/:id",isLoginAdmin, getStatusControl);
+router.put("/:id",isLoginAdmin, actionStatusControl);
 
 
 module.exports = router;
