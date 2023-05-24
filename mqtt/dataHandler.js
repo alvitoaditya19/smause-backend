@@ -34,7 +34,7 @@ module.exports = {
     },
     GetDataControl: async (payload) => {
         try {
-            const newData = await Control.findOne().select('lamp1 lamp2 pump1 pump2 valve blend status');
+            const newData = await Control.findOne({ userId: id }).select('lamp1 lamp2 pump1 pump2 valve blend statusControl');
             console.log(newData)
         } catch (error) {
             console.error(`Error ${error.message}`)
@@ -44,25 +44,10 @@ module.exports = {
         const rawData = payload.toString()
         try {
             const dataJson = await JSON.parse(rawData)
-
-            const badData = new Control({
-                lamp1: dataJson.lamp1,
-                lamp2: dataJson.lamp2,
-                pump1: dataJson.pump1,
-                pump2: dataJson.pump2,
-                valve: dataJson.valve,
-                blend: dataJson.blend,
-                status: dataJson.status
-            });
-            const error = badData.validateSync();
-
-            if (error) {
-                return Error()
-            }
-            await Control.findByIdAndUpdate(
-                {
-                    _id: "63d1decc37a463ae302eeba3",
-                },
+            const stringId = dataJson.userId;
+            const objectId = mongoose.Types.ObjectId(stringId);
+            const badData = new Control(
+                { userId: objectId },
                 {
                     lamp1: dataJson.lamp1,
                     lamp2: dataJson.lamp2,
@@ -70,7 +55,23 @@ module.exports = {
                     pump2: dataJson.pump2,
                     valve: dataJson.valve,
                     blend: dataJson.blend,
-                    status: dataJson.status
+                    statusControl: dataJson.statusControl
+                });
+            const error = badData.validateSync();
+
+            if (error) {
+                return Error()
+            }
+            await Control.findByIdAndUpdate(
+                { userId: objectId },
+                {
+                    lamp1: dataJson.lamp1,
+                    lamp2: dataJson.lamp2,
+                    pump1: dataJson.pump1,
+                    pump2: dataJson.pump2,
+                    valve: dataJson.valve,
+                    blend: dataJson.blend,
+                    statusControl: dataJson.statusControl
                 },
             )
         } catch (error) {
@@ -101,7 +102,6 @@ module.exports = {
                 let decOksigen = dataDecipher2.update(waterDataMap.oksigen, 'hex', 'utf8');
                 decOksigen += dataDecipher2.final('utf8');
 
-
                 const dataDecipher3 = crypto.createDecipheriv(cryptoAlgorithm, key, iv);
                 let decKekeruhanAir = dataDecipher3.update(waterDataMap.kekeruhanAir, 'hex', 'utf8');
                 decKekeruhanAir += dataDecipher3.final('utf8');
@@ -128,9 +128,15 @@ module.exports = {
             });
             console.log("adojaiodjoa", dataJson.oksigen)
 
-            socket.socketConnection.socket.emit("dataCardAir", waterMap.slice(-1))
+            socket.socketConnection.socket.emit("dataCardAir", {
+                userId: objectId,
+                data: waterMap.slice(-1),
+            })
 
-            socket.socketConnection.socket.emit("dataGraphAir", waterMap.slice(-4))
+            socket.socketConnection.socket.emit("dataGraphAir", {
+                userId: objectId,
+                data: waterMap.slice(-4)
+            })
 
         } catch (error) {
             console.error(`Error ${error.message}`)
@@ -156,7 +162,7 @@ module.exports = {
             const objectId = mongoose.Types.ObjectId(stringId);
 
             const payloadEnc = {
-                userId:objectId,
+                userId: objectId,
                 ketinggianAir: dataJson.ketinggianAir ?? "30039b4d60c8126a163c1805ba1882fb",
                 oksigen: dataJson.oksigen ?? "30039b4d60c8126a163c1805ba1882fb",
                 kekeruhanAir: dataJson.kekeruhanAir ?? "30039b4d60c8126a163c1805ba1882fb"
@@ -183,7 +189,7 @@ module.exports = {
 
             const newData = await AirEnc(payloadEnc).save()
 
-            const water = await AirEnc.find({userId:objectId});
+            const water = await AirEnc.find({ userId: objectId });
 
             const waterMap = water.map((waterDataMap, index) => {
                 const waterCalender = new Date(waterDataMap.createdAt);
@@ -221,9 +227,15 @@ module.exports = {
                         waterCalender.getSeconds(),
                 };
             });
-            socket.socketConnection.socket.emit("dataCardAir", waterMap.slice(-1))
+            socket.socketConnection.socket.emit("dataCardAir", {
+                userId: objectId,
+                data: waterMap.slice(-1),
+            })
 
-            socket.socketConnection.socket.emit("dataGraphAir", waterMap.slice(-4))
+            socket.socketConnection.socket.emit("dataGraphAir", {
+                userId: objectId,
+                data: waterMap.slice(-4)
+            })
 
         } catch (error) {
             console.error(`Error ${error.message}`)
@@ -271,9 +283,15 @@ module.exports = {
                         suhuCalender.getSeconds(),
                 };
             });
-            socket.socketConnection.socket.emit("dataCardUdara", temperatureMap.slice(-1))
+            socket.socketConnection.socket.emit("dataCardUdara", {
+                userId: objectId,
+                data: temperatureMap.slice(-1),
+            })
 
-            socket.socketConnection.socket.emit("dataGraphUdara", temperatureMap.slice(-4))
+            socket.socketConnection.socket.emit("dataGraphUdara", {
+                userId: objectId,
+                data: temperatureMap.slice(-4),
+            })
         } catch (error) {
             console.error(`Error ${error.message}`)
         }
@@ -293,7 +311,7 @@ module.exports = {
             const objectId = mongoose.Types.ObjectId(stringId);
 
             const payloadEnc = {
-                userId:objectId,
+                userId: objectId,
                 humidity: dataJson.humidity ?? "30039b4d60c8126a163c1805ba1882fb",
                 celcius: dataJson.celcius ?? "30039b4d60c8126a163c1805ba1882fb",
             };
@@ -313,7 +331,7 @@ module.exports = {
                 throw new Error(JSON.stringify('Pesan tidak dienkripsi dengan AES-128'));
             }
             const newData = await new UdaraEnc(payloadEnc).save()
-            const temperature = await UdaraEnc.find({userId:objectId});
+            const temperature = await UdaraEnc.find({ userId: objectId });
 
             const temperatureMap = temperature.map((suhuDataMap, index) => {
                 const suhuCalender = new Date(suhuDataMap.createdAt);
@@ -344,9 +362,16 @@ module.exports = {
                         suhuCalender.getSeconds(),
                 };
             });
-            socket.socketConnection.socket.emit("dataCardUdara", temperatureMap.slice(-1))
+            socket.socketConnection.socket.emit("dataCardUdara", {
+                userId: objectId,
+                data: temperatureMap.slice(-1),
+            })
 
-            socket.socketConnection.socket.emit("dataGraphUdara", temperatureMap.slice(-4))
+            socket.socketConnection.socket.emit("dataGraphUdara", {
+                userId: objectId,
+                data: temperatureMap.slice(-4),
+            })
+
         } catch (error) {
             console.error(`Error ${error.message}`)
         }
@@ -413,7 +438,7 @@ module.exports = {
         const rawData = payload.toString()
         try {
             const dataJson = await JSON.parse(rawData)
-            
+
             // const dataEncrypt1 = crypto.createCipheriv(cryptoAlgorithm, key, iv);
             // let dataCipher1 = dataEncrypt1.update(dataJson.kelembapanTanah, 'utf8', 'hex');
             // dataCipher1 += dataEncrypt1.final('hex');
@@ -448,7 +473,7 @@ module.exports = {
             const objectId = mongoose.Types.ObjectId(stringId);
 
             const payloadEnc = {
-                userId:objectId,
+                userId: objectId,
 
                 // kelembapanTanah: dataJson.kelembapanTanah ?? "30039b4d60c8126a163c1805ba1882fb",
                 phTanah: dataJson.phTanah ?? "30039b4d60c8126a163c1805ba1882fb",
@@ -468,11 +493,11 @@ module.exports = {
                 throw new Error(JSON.stringify('Pesan tidak dienkripsi dengan AES-128'));
             }
             const newData = await new TanahEnc(payloadEnc).save()
-            const soilData = await TanahEnc.find({userId:objectId});
+            const soilData = await TanahEnc.find({ userId: objectId });
 
             const soilDataMap = soilData.map((soilDataMap, index) => {
                 const soilCalender = new Date(soilDataMap.createdAt);
-                
+
                 // const dataDecipher1 = crypto.createDecipheriv(cryptoAlgorithm, key, iv);
                 // let decKelembapanTanah = dataDecipher1.update(soilDataMap.kelembapanTanah, 'hex', 'utf8');
                 // decKelembapanTanah += dataDecipher1.final('utf8');
@@ -500,9 +525,15 @@ module.exports = {
                         soilCalender.getSeconds(),
                 };
             });
-            socket.socketConnection.socket.emit("dataCardTanah", soilDataMap.slice(-1))
+            socket.socketConnection.socket.emit("dataCardTanah", {
+                userId: objectId,
+                data: soilDataMap.slice(-1)
+            })
 
-            socket.socketConnection.socket.emit("dataGraphTanah", soilDataMap.slice(-4))
+            socket.socketConnection.socket.emit("dataGraphTanah", {
+                userId: objectId,
+                data: soilDataMap.slice(-4)
+            })
 
 
             // const newData = await new TanahEnc(payloadEnc).save()
@@ -525,7 +556,7 @@ module.exports = {
             const objectId = mongoose.Types.ObjectId(stringId);
 
             const payloadEnc = {
-                userId:objectId,
+                userId: objectId,
 
                 kelembapanTanah: dataJson.kelembapanTanah ?? "30039b4d60c8126a163c1805ba1882fb",
                 // phTanah: dataCipher2,
@@ -548,7 +579,7 @@ module.exports = {
 
             const newData = await new TanahKelemEnc(payloadEnc).save()
 
-            const soilData = await TanahKelemEnc.find({userId:objectId});
+            const soilData = await TanahKelemEnc.find({ userId: objectId });
 
             const soilDataMap = soilData.map((soilDataMap, index) => {
                 const soilCalender = new Date(soilDataMap.createdAt);
@@ -580,9 +611,15 @@ module.exports = {
                         soilCalender.getSeconds(),
                 };
             });
-            socket.socketConnection.socket.emit("dataCardTanahKelem", soilDataMap.slice(-1))
+            socket.socketConnection.socket.emit("dataCardTanahKelem", {
+                userId: objectId,
+                data: soilDataMap.slice(-1)
+            })
 
-            socket.socketConnection.socket.emit("dataGraphTanahKelem", soilDataMap.slice(-4))
+            socket.socketConnection.socket.emit("dataGraphTanahKelem", {
+                userId: objectId,
+                data: soilDataMap.slice(-4)
+            })
 
 
             // const newData = await new TanahEnc(payloadEnc).save()

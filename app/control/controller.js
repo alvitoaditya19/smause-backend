@@ -16,9 +16,6 @@ module.exports = {
 
       const controlData = await Control.findOneAndUpdate(
         {userId:id},
-        // {
-        //   _id: "63d1decc37a463ae302eeba3",
-        // },
         {
           lamp1,
           lamp2,
