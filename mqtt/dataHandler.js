@@ -632,6 +632,9 @@ module.exports = {
         try {
             const dataJson = await JSON.parse(rawData)
 
+            const stringId = dataJson.userId;
+            const objectId = mongoose.Types.ObjectId(stringId);
+
             const newData = await new Message(dataJson).save()
 
             socket.socketConnection.socket.emit("dataMessaage", {

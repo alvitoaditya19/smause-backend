@@ -13,6 +13,8 @@ const iv = '4567123212343219'; //16 karakter
 module.exports = {
   getDataSoilEnc: async (req, res, next) => {
     try {
+      const { id } = req.params;
+
       let { limit = "" } = req.query;
       let { page = "" } = req.query;
       if (!limit) {
@@ -21,8 +23,8 @@ module.exports = {
       if (!page) {
         page = 1;
       }
-      const soilData = await SoilEnc.find({});
-      const soilKelemData = await SoiKelemlEnc.find({});
+      const soilData = await SoilEnc.find({userId:id});
+      const soilKelemData = await SoiKelemlEnc.find({userId:id});
 
       const all = [...soilData, ...soilKelemData]
 
