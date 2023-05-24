@@ -634,7 +634,10 @@ module.exports = {
 
             const newData = await new Message(dataJson).save()
 
-            socket.socketConnection.socket.emit("dataMessaage", dataJson)
+            socket.socketConnection.socket.emit("dataMessaage", {
+                userId: objectId,
+                data: dataJson
+            })
 
         } catch (error) {
             console.error(`Error ${error.message}`)
