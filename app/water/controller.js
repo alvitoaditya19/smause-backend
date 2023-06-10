@@ -1,4 +1,6 @@
 const Water = require("./model");
+const User = require("../user/model");
+
 const WaterEnc = require("./model-enc");
 const socket = require('../../bin/www')
 
@@ -93,6 +95,68 @@ module.exports = {
       });
     }
 
+  },
+  getAllDataWaterEnc: async (req, res, next) => {
+    try {
+      let { limit = "" } = req.query;
+      let { page = "" } = req.query;
+      if (!limit) {
+        limit = Infinity;
+      }
+      if (!page) {
+        page = 1;
+      }
+      
+      const water = await WaterEnc.find({ userId: { $exists: true, $ne: null } });
+      const userIds = water.map(waterData => waterData.userId); // Mengambil semua userId dari data water
+  
+      const users = await User.find({ _id: { $in: userIds } }); // Mencari pengguna berdasarkan userIds
+  
+      const waterMap = water.map((waterDataMap, index) => {
+        const waterCalender = new Date(waterDataMap.createdAt);
+  
+        const user = users.find(user => user._id.toString() === waterDataMap.userId.toString()); // Mencari pengguna yang sesuai dengan userId
+  
+        return {
+          no: index + 1,
+          id: waterDataMap.id,
+          name: user ? user.name : "", // Menambahkan data nama pengguna (jika ada)
+          userId:waterDataMap.userId,
+  
+          ketinggianAir: waterDataMap.ketinggianAir,
+          oksigen: waterDataMap.oksigen,
+          kekeruhanAir: waterDataMap.kekeruhanAir,
+  
+          date:
+            waterCalender.getDate() +
+            " - " +
+            (waterCalender.getMonth() + 1) +
+            " - " +
+            waterCalender.getFullYear(),
+          time:
+            waterCalender.getHours() +
+            ":" +
+            waterCalender.getMinutes() +
+            ":" +
+            waterCalender.getSeconds(),
+        };
+      });
+      
+      const totalWaterData = waterMap.length;
+  
+      const startIndex = (page - 1) * limit;
+      const endIndex = page * limit;
+      const result = waterMap.slice(startIndex, endIndex);
+  
+      res.status(201).json({
+        total: totalWaterData,
+        data: result,
+      });
+    } catch (err) {
+      res.status(500).json({
+        message: err.message || `Internal Server Error`,
+      });
+    }
   },
   getDataWaterEnc: async (req, res, next) => {
     try {

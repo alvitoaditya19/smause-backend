@@ -1,4 +1,6 @@
 const Settings = require("./model");
+const User = require("../user/model");
+
 
 module.exports = {
   actionUp: async (req, res, next) => {
@@ -88,6 +90,65 @@ module.exports = {
         });
       }
       next(err);
+    }
+  },
+  getAllDataSetting: async (req, res) => {
+    try {
+
+      let { limit = "" } = req.query;
+      let { page = "" } = req.query;
+
+      if (!limit) {
+        limit = Infinity;
+      }
+      if (!page) {
+        page = 1;
+      }
+
+
+      let settingData = await Settings.find({ userId: { $exists: true, $ne: null } })
+      const userIds = settingData.map(settingsData => settingsData.userId); // Mengambil semua userId dari data water
+  
+      const users = await User.find({ _id: { $in: userIds } }); 
+      
+      let settingAllData = settingData.map((item, index) => {
+        const user = users.find(user => user._id.toString() === item.userId.toString());
+        return {
+          _id: item.id,
+          no: index + 1,
+          name: user ? user.name : "No Name",
+          userId: item.userId,
+
+          nameVegetable: item.nameVegetable,
+          amountVegetable: item.amountVegetable,
+          amountHarvest: item.amountHarvest,
+        }
+      })
+
+      const sumHarvest = settingAllData
+        .map(item => item.amountHarvest)
+        .reduce((prev, curr) => prev + curr, 0);
+
+      const sumVegetable = settingAllData
+        .map(item => item.amountVegetable)
+        .reduce((prev, curr) => prev + curr, 0);
+
+      const totalSettingData = settingAllData.length;
+
+      const startIndex = (page - 1) * limit;
+      const endIndex = page * limit;
+      const result = settingAllData.slice(startIndex, endIndex);
+
+      res.status(201).json({
+        total: totalSettingData,
+        totalVegetable: sumVegetable,
+        totalHarvest: sumHarvest,
+        data: result,
+      });
+    } catch (err) {
+      res.status(500).json({
+        message: err.message || `Internal Server Error`,
+      });
     }
   },
   getDataSetting: async (req, res) => {

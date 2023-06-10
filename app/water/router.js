@@ -1,6 +1,6 @@
 var express = require("express");
 var router = express.Router();
-const { tesController, getDataWaterReal,getDataWaterEnc, postWaterEnc, actionConvertCSV, decryptData, postWaterReal } = require("./controller");
+const { tesController, getDataWaterReal,getDataWaterEnc, postWaterEnc, actionConvertCSV, decryptData, postWaterReal, getAllDataWaterEnc } = require("./controller");
 const { isLoginAdmin } = require('../middleware/auth');
 const multer = require("multer");
 const os = require("os");
@@ -11,6 +11,8 @@ router.post("/real",isLoginAdmin, postWaterReal);
 
 
 router.get("/encrypt/:id",isLoginAdmin, getDataWaterEnc);
+router.get("/all",isLoginAdmin, getAllDataWaterEnc);
+
 router.get("/real",isLoginAdmin, getDataWaterReal);
 
 // Testing

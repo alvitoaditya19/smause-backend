@@ -1,5 +1,6 @@
 const Temperature = require("./model");
 const TemperatureEnc = require("./model-enc");
+const User = require("../user/model");
 
 const { Parser } = require("json2csv");
 const crypto = require('crypto');
@@ -10,6 +11,62 @@ const iv = '4567123212343219'; //16 karakter
 // 1234567890123456
 
 module.exports = {
+  getAllDataTempEnc: async (req, res, next) => {
+    try {
+      const { id } = req.params;
+
+      let { limit = "" } = req.query;
+      let { page = "" } = req.query;
+      if (!limit) {
+        limit = Infinity;
+      }
+      if (!page) {
+        page = 1;
+      }
+      const temperature = await TemperatureEnc.find({userId: { $exists: true, $ne: null}});
+      const userIds = temperature.map(TemperatureEnc => TemperatureEnc.userId); // Mengambil semua userId dari data water
+  
+      const users = await User.find({ _id: { $in: userIds } }); // Mencari pengguna berdasarkan userIds
+  
+      const timeTemp = temperature.map((suhuDataMap, index) => {
+        const suhuCalender = new Date(suhuDataMap.createdAt);
+        const user = users.find(user => user._id.toString() === suhuDataMap.userId.toString()); // Mencari pengguna yang sesuai dengan userId
+        return {
+          no: index + 1,
+          id: suhuDataMap.id,
+          name: user ? user.name : "No Name", // Menambahkan data nama pengguna (jika ada)
+          celcius: suhuDataMap.celcius,
+          humidity: suhuDataMap.humidity,
+          date:
+            suhuCalender.getDate() +
+            " - " +
+            (suhuCalender.getMonth() + 1) +
+            " - " +
+            suhuCalender.getFullYear(),
+          time:
+            suhuCalender.getHours() +
+            ":" +
+            suhuCalender.getMinutes() +
+            ":" +
+            suhuCalender.getSeconds(),
+        };
+      });
+      const totalTemp = temperature.length;
+
+      const startIndex = (page - 1) * limit;
+      const endIndex = page * limit;
+      const result = timeTemp.slice(startIndex, endIndex);
+
+      res.status(201).json({
+        total: totalTemp,
+        data: result,
+      });
+    } catch (err) {
+      res.status(500).json({
+        message: err.message || `Internal Server Error`,
+      });
+    }
+  },
   getDataTempEnc: async (req, res, next) => {
     try {
       const { id } = req.params;

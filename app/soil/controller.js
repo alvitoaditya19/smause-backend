@@ -1,6 +1,8 @@
 const Soil = require("./model");
 const SoilEnc = require("./model-enc");
 const SoiKelemlEnc = require("./modelKelem-enc");
+const User = require("../user/model");
+
 
 const { Parser } = require("json2csv");
 const crypto = require('crypto');
@@ -11,6 +13,123 @@ const iv = '4567123212343219'; //16 karakter
 // 1234567890123456
 
 module.exports = {
+  getAllDataSoilEnc: async (req, res, next) => {
+    try {
+
+      let { limit = "" } = req.query;
+      let { page = "" } = req.query;
+      if (!limit) {
+        limit = Infinity;
+      }
+      if (!page) {
+        page = 1;
+      }
+      const soilData = await SoilEnc.find({userId: { $exists: true, $ne: null}});
+      const soilKelemData = await SoiKelemlEnc.find({userId: { $exists: true, $ne: null}});
+
+      const all = [...soilData, ...soilKelemData]
+      const userIds = all.map(SoilEnc => SoilEnc.userId); // Mengambil semua userId dari data water
+  
+      const users = await User.find({ _id: { $in: userIds } }); // Mencari pengguna berdasarkan userIds
+
+      const soilDatMap = all.map((soilDataMap, index) => {
+        const soilCalender = new Date(soilDataMap.createdAt);
+        const user = users.find(user => user._id.toString() === soilDataMap.userId.toString());
+        return {
+          no: index + 1,
+          id: soilDataMap.id,
+          name: user ? user.name : "No Name",
+          kelembapanTanah: soilDataMap.kelembapanTanah,
+          phTanah: soilDataMap.phTanah,
+          date:
+            soilCalender.getDate() +
+            " - " +
+            (soilCalender.getMonth() + 1) +
+            " - " +
+            soilCalender.getFullYear(),
+          time:
+            soilCalender.getHours() +
+            ":" +
+            soilCalender.getMinutes() +
+            ":" +
+            soilCalender.getSeconds(),
+        };
+      });
+      const userIdsPart1 = soilData.map(SoilEnc => SoilEnc.userId);
+  
+      const usersPart1 = await User.find({ _id: { $in: userIdsPart1 } });
+      const soilDatMapPart1 = soilData.map((soilDataMap, index) => {
+        const soilCalender = new Date(soilDataMap.createdAt);
+        const userp1 = usersPart1.find(user => user._id.toString() === soilDataMap.userId.toString());
+        return {
+          no: index + 1,
+          id: soilDataMap.id,
+          name: userp1 ? userp1.name : "No Name",
+
+          phTanah: soilDataMap.phTanah,
+          date:
+            soilCalender.getDate() +
+            " - " +
+            (soilCalender.getMonth() + 1) +
+            " - " +
+            soilCalender.getFullYear(),
+          time:
+            soilCalender.getHours() +
+            ":" +
+            soilCalender.getMinutes() +
+            ":" +
+            soilCalender.getSeconds(),
+        };
+      });
+
+      const userIdsPart2 = soilData.map(SoilEnc => SoilEnc.userId);
+  
+      const usersPart2 = await User.find({ _id: { $in: userIdsPart2 } });
+      const soilDatMapPart2 = soilKelemData.map((soilDataMap, index) => {
+        const soilCalender = new Date(soilDataMap.createdAt);
+        const userp2 = usersPart2.find(user => user._id.toString() === soilDataMap.userId.toString());
+        return {
+          no: index + 1,
+          id: soilDataMap.id,
+          name: userp2 ? userp2.name : "No Name",
+
+          kelembapanTanah: soilDataMap.kelembapanTanah,
+          date:
+            soilCalender.getDate() +
+            " - " +
+            (soilCalender.getMonth() + 1) +
+            " - " +
+            soilCalender.getFullYear(),
+          time:
+            soilCalender.getHours() +
+            ":" +
+            soilCalender.getMinutes() +
+            ":" +
+            soilCalender.getSeconds(),
+        };
+      });
+      const totalSoil = soilDatMap.length;
+
+      const startIndex = (page - 1) * limit;
+      const endIndex = page * limit;
+      const result = soilDatMap.slice(startIndex, endIndex);
+
+      const resultMapPArt1 = soilDatMapPart1.slice(startIndex, endIndex);
+      const resultMapPArt2 = soilDatMapPart2.slice(startIndex, endIndex);
+
+
+      res.status(201).json({
+        total: totalSoil,
+        data: result,
+        dataSoil: resultMapPArt1,
+        dataSoilKelem: resultMapPArt2,
+      });
+    } catch (err) {
+      res.status(500).json({
+        message: err.message || `Internal Server Error`,
+      });
+    }
+  },
   getDataSoilEnc: async (req, res, next) => {
     try {
       const { id } = req.params;

@@ -1,6 +1,6 @@
 var express = require("express");
 var router = express.Router();
-const {postTempReal,postTempEnc, actionConvertCSV, getDataSoilEnc, getDataSoilReal, postSoil,  } = require("./controller");
+const {postTempReal,postTempEnc, actionConvertCSV, getDataSoilEnc, getDataSoilReal, postSoil, getAllDataSoilEnc,  } = require("./controller");
 const { isLoginAdmin } = require('../middleware/auth');
 const multer = require("multer");
 const os = require("os");
@@ -9,6 +9,8 @@ const os = require("os");
 router.post("/", isLoginAdmin,postSoil);
 
 router.get("/encrypt/:id",isLoginAdmin, getDataSoilEnc);
+router.get("/all",isLoginAdmin, getAllDataSoilEnc);
+
 router.get("/real", isLoginAdmin,getDataSoilReal);
 
 router.post("/encrypt",isLoginAdmin, postTempEnc);
