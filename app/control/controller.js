@@ -8,7 +8,7 @@ module.exports = {
     try {
       const { id } = req.params;
 
-      const { lamp1, lamp2, pump1, pump2, valve, blend, statusControl } = req.body;
+      const { lamp1, lamp2, pump1, pump2, valve, blend, status } = req.body;
       const host = 'test.mosquitto.org';
       const clientId = `mqtt_${Math.random().toString(16).slice(3)}`;
       const connectUrl = `mqtt://${host}}`;
@@ -23,7 +23,7 @@ module.exports = {
           pump2,
           valve,
           blend,
-          statusControl
+          status
         },
         { new: true, useFindAndModify: false }
       );
@@ -35,7 +35,7 @@ module.exports = {
         pump2: controlData.pump2,
         valve: controlData.valve,
         blend: controlData.blend,
-        statusControl: controlData.statusControl
+        status:controlData.status,
       }
 
       const dataJsonControl = await JSON.stringify(payloadControl)

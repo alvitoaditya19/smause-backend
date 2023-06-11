@@ -53,7 +53,15 @@ const controlSchema = mongoose.Schema({
     },
     default: "ON",
   },
-  statusControl: {
+  // statusControl: {
+  //   type: String,
+  //   enum: {
+  //     values: ["ON", "OFF"],
+  //     message: 'Status is required.'
+  //   },
+  //   default: "ON",
+  // },
+  status: {
     type: String,
     enum: {
       values: ["ON", "OFF"],
