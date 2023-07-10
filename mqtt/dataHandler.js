@@ -34,7 +34,7 @@ module.exports = {
     },
     GetDataControl: async (payload) => {
         try {
-            const newData = await Control.findOne({ userId: id }).select('lamp1 lamp2 pump1 pump2 valve blend statusControl');
+            const newData = await Control.findOne({ userId: id }).select('lamp1 lamp2 pump1 pump2 valve blend status');
             console.log(newData)
         } catch (error) {
             console.error(`Error ${error.message}`)
@@ -55,7 +55,7 @@ module.exports = {
                     pump2: dataJson.pump2,
                     valve: dataJson.valve,
                     blend: dataJson.blend,
-                    statusControl: dataJson.statusControl
+                    status: dataJson.status
                 });
             const error = badData.validateSync();
 
@@ -71,7 +71,7 @@ module.exports = {
                     pump2: dataJson.pump2,
                     valve: dataJson.valve,
                     blend: dataJson.blend,
-                    statusControl: dataJson.statusControl
+                    status: dataJson.status
                 },
             )
         } catch (error) {
