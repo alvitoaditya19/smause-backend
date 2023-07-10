@@ -34,7 +34,10 @@ module.exports = {
     },
     GetDataControl: async (payload) => {
         try {
-            const newData = await Control.findOne({ userId: id }).select('lamp1 lamp2 pump1 pump2 valve blend status');
+            const dataJson = await JSON.parse(rawData)
+            const stringId = dataJson.userId;
+            const objectId = mongoose.Types.ObjectId(stringId);
+            const newData = await Control.findOne({ userId: objectId }).select('lamp1 lamp2 pump1 pump2 valve blend status');
             console.log(newData)
         } catch (error) {
             console.error(`Error ${error.message}`)
